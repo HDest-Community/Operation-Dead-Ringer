@@ -1,0 +1,18 @@
+version "4.7.1"
+
+#include "zscript/handlers.zsc"
+
+#include "zscript/souldrain.zsc"
+
+#include "zscript/mob_grasazombie.zsc"
+
+#include "zscript/wep_thunderhawk.zsc"
+#include "zscript/wep_cintia.zsc"
+#include "zscript/wep_montaraz.zsc"
+#include "zscript/wep_grasa.zsc"
+#include "zscript/wep_hellstaff.zsc"
+#include "zscript/wep_demonmask.zsc"
+#include "zscript/wep_bow.zsc"
+#include "zscript/wep_boomerang.zsc"
+
+#include "zscript/item_scrolls.zsc"

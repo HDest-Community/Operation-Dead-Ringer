@@ -1,0 +1,82 @@
+class ODRSoulDrain : Inventory {
+	default {
+		+inventory.untossable
+		+inventory.keepdepleted
+		inventory.amount 1;
+		inventory.maxamount 66600;
+	}
+	
+	override void DoEffect() {
+		if (owner && !owner.CountInv("ODRSoulDrainTicker")) {
+			HDF.Give(owner, "ODRSoulDrainTicker", 1);
+		}
+	}
+	
+	states {
+		spawn:
+			TNT1 A 0;
+			stop;
+	}
+}
+
+class ODRSoulDrainTicker : Inventory {
+	default {
+		+inventory.untossable
+		inventory.amount 1;
+		inventory.maxamount 1;
+	}
+	
+	override void AttachToOwner(Actor user) {
+		super.AttachToOwner(user);
+		owner.A_StartSound("misc/souldrainambience", 6, CHANF_LOOPING, 0.1, ATTN_STATIC);
+	}
+	
+	override void DoEffect() {
+		if (owner) {
+			HDPlayerPawn hdp = HDPlayerPawn(owner);
+			let sd = CountInv("ODRSoulDrain");
+			owner.A_SoundVolume(6, sd/66600.);
+			if (!sd) {
+				if (!bDESTROYED) {Destroy();}
+			} else {
+				let blu = owner.CountInv("HDBlues");
+				if (blu && !(level.time % 20)) {
+					let value = random(10, 100);
+					HDF.Give(owner, "HDBlues", -1);
+					HDF.Give(owner, "ODRSoulDrain", -value);
+					owner.DamageMobj(owner, owner, min(value/10, owner.health-5), "hot");
+					if (hd_debug) {
+						console.printf("%s %i %s %i", "Soul Recover  ", value, "  Remaining: ", 66600-sd);
+					}
+				}
+				
+				if (hdp) {
+					let soulFatigue = int(40*(sd/66600.));
+					let soulHeart = int(TICRATE*(sd/66600.));
+					if (hdp.fatigue < soulFatigue) {hdp.fatigue++;}
+					if (hdp.beatmax < soulHeart) {hdp.beatMax++;}
+				}
+			}	
+		}
+	}
+}
+
+class ODRMagicWeapon : HDWeapon {
+	action bool A_StealSoul(int value) {
+		string bibble = "SpiritualArmour";
+		int bibVal = CountInv(bibble);
+		if (bibVal<3 && !random(0, bibVal*2)) {
+			HDF.Give(self, "ODRSoulDrain", value);
+			if (hd_debug) {
+				let sd = CountInv("ODRSoulDrain");
+				console.printf("%s %i %s %i", "Soul Drain  ", value, "  Remaining: ", 66600-sd);
+			}
+			return true;
+		} else {
+			if (hd_debug) {
+				console.printf("%s %s", "Spiritual Armor PREVENTED Soul Drain for", GetTag());
+			}
+			return false;
+		}
+	}
+}

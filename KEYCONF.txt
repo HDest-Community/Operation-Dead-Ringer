@@ -1,0 +1,11 @@
+alias hd_odr_resetweapons "hd_odr_weaponfrequency 30;hd_odr_chainsawreplace 8;hd_odr_pistolreplace 1;hd_odr_revolverreplace 1;hd_odr_smgreplace 4;hd_odr_shotgunreplace 2;hd_odr_ssgreplace 3;hd_odr_assaultriflereplace 4;hd_odr_chaingunreplace 4;hd_odr_grenadelauncherreplace 5;hd_odr_rocketlauncherreplace 5;hd_odr_thunderbusterreplace 6;hd_odr_bfgreplace 7;hd_odr_liberatorreplace 4;hd_odr_sniperreplace 9;hd_odr_brontoreplace 6;"
+alias hd_odr_resetenemies "hd_odr_zombiegrasa 30;"
+
+alias hd_odr_resetthunderhawk "hd_odr_thdualaction 10;hd_odr_thautofire 0;hd_odr_threcoildamage 1;"
+alias hd_odr_resetcintia "hd_odr_cintiaslingchance 10;hd_odr_cintiachokechance 15;hd_odr_cintiaslingbulk 0.75;hd_odr_cintiaeasylever 0;hd_odr_cintialegacyanim 0;"
+alias hd_odr_resetmontaraz "hd_odr_montarazchokechance 15;hd_odr_montoverload 1;hd_odr_montloadsboth 0;hd_odr_monteasyoverload 0;"
+alias hd_odr_resetgrasa "hd_odr_grasahackchance 10;hd_odr_grasaqualitychance 10;hd_odr_grasafeedrate 1.0;hd_odr_grasaboltrate 1.0;hd_odr_grasarepairrate 1.0;"
+alias hd_odr_resetanthrakia "hd_odr_anthrakiaspellsknown 1;hd_odr_anthrakiafragleak 1.0;hd_odr_anthrakiasouldrain 1.0;"
+alias hd_odr_resetbasilissa "hd_odr_basilissasouldrain 1.0;"
+alias hd_odr_resetheki "hd_odr_hekishotspeed 1.0;"
+alias hd_odr_resetnimurdal "hd_odr_nimurdalthrowspeed 1.0;"

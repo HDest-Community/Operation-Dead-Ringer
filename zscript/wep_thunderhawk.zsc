@@ -1,0 +1,577 @@
+/**
+== R&C THUNDERHAWK ==
+- Loadout Code: rct
+- Ammo Type: .500 S&W Magnum, .500 Wildcat
+- Modifiers: Dual-Action (dual <0-1>)
+
+There's rumors going around that this thing's not of this world. I mean, who the
+hell chambers an eight-shot revolver in .500 S&W Magnum? And it's not much 
+heavier than your standard-issue revolver, to boot... It certainly doesn't help 
+that there aren't any manufacturer's marks, apart from a couple animal-claw 
+lookin' symbols etched into the frame. Wherever it came from, it's a damn 
+powerhouse of a gun, blowin' most demons clean on their asses in one or two 
+shots. Just mind the recoil; this thing kicks like a mule, and you'll hurt your 
+wrist REAL bad if you don't pace yourself.
+**/
+
+class HDThunderhawk : HDRevolver {
+	int wristpain;
+	bool fanning;
+	default {
+		//$Category "Weapons/Operation: Dead Ringer"
+		//$Title "R&C Thunderhawk"
+		//$Sprite "RCTHA0"
+	
+		hdweapon.refid "rct";
+		tag "$TAG_THUNDERHAWK";
+		obituary "$OBIT_THUNDERHAWK";
+		inventory.pickupmessage "$PICKUP_THUNDERHAWK";
+		
+		hdweapon.loadoutcodes "
+			\cudual - 0/1, set 1 for dual-action trigger";
+	}
+	
+	override double gunmass() {
+		double blk = 9;
+		for (int i=RCTH_CYL1;i<=RCTH_CYL8;i++) {
+			if (weaponstatus[i] == RCTH_SWLOADED) {blk += 0.6;}
+		}
+		return blk;
+	}
+	
+	override double weaponbulk() {
+		double blk = 42;
+		for (int i=RCTH_CYL1;i<=RCTH_CYL8;i++) {
+			if (weaponstatus[i] == RCTH_SWLOADED) {blk += ENC_50SW_LOADED;}
+		}
+		return blk;
+	}
+	
+	override string,double getpickupsprite(){
+		return "RCTHA0",1.;
+	}
+	
+	override string pickupmessage() {
+		return StringTable.Localize(super.pickupmessage());
+	}
+	
+	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
+		if(sb.hudlevel==1){
+			sb.drawimage("PRNDA0",(-47,-10),sb.DI_SCREEN_CENTER_BOTTOM,scale:(2.1,2.55));
+			sb.drawnum(hpl.countinv("HD500SWLightAmmo"),-44,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+			sb.drawimage("PRNDB0",(-64,-10),sb.DI_SCREEN_CENTER_BOTTOM,scale:(2.1,2.55));
+			sb.drawnum(hpl.countinv("HD500SWHeavyAmmo"),-60,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+		}
+		int plf=hpl.player.getpsprite(PSP_WEAPON).frame;
+		for(int i=RCTH_CYL1;i<=RCTH_CYL8;i++){
+			double drawangle=i*(360./8.)-135;
+			vector2 cylpos;
+			if(plf==4){
+				drawangle-=45.;
+				cylpos=(-30,-14);
+			}else if(cylinderopen){
+				drawangle-=90;
+				cylpos=(-34,-12);
+			}else{
+				cylpos=(-22,-20);
+			}
+			double cdrngl=cos(drawangle);
+			double sdrngl=sin(drawangle);
+			if(
+				!cylinderopen
+				&&sb.hud_aspectscale.getbool()
+			){
+				cdrngl*=1.1;
+				sdrngl*=(1./1.1);
+			}
+			vector2 drawpos=cylpos+(cdrngl,sdrngl)*5;
+			sb.fill(
+				hdw.weaponstatus[i]>0?
+				color(255,240,230,40)
+				:color(200,30,26,24),
+				drawpos.x,
+				drawpos.y,
+				3,3,
+				sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_ITEM_RIGHT
+			);
+		}
+	}
+	
+	override string gethelptext(){
+		if(cylinderopen)return
+		WEPHELP_FIRE.." Close cylinder\n"
+		..WEPHELP_ALTFIRE.." Cycle cylinder \(Hold "..WEPHELP_ZOOM.." to reverse\)\n"
+		..WEPHELP_UNLOAD.." Hit extractor \(double-tap to dump live rounds\)\n"
+		..WEPHELP_RELOAD.." Load round \(Hold "..WEPHELP_FIREMODE.." to force using Wildcat\)\n"
+		;
+		return
+		WEPHELP_FIRESHOOT
+		..WEPHELP_ALTFIRE.." Pull back hammer\n"
+		..WEPHELP_FIRE.."+"..WEPHELP_ALTFIRE.." Fan hammer\n"
+		..WEPHELP_UNLOAD.."/"..WEPHELP_RELOAD.." Open cylinder\n"
+		;
+	}
+	
+	override void InitializeWepStats() {
+		weaponstatus[RCTH_CYL1] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL2] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL3] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL4] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL5] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL6] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL7] = RCTH_SWLOADED;
+		weaponstatus[RCTH_CYL8] = RCTH_SWLOADED;
+		weaponstatus[0] &= ~RCTH_COCKED;
+	}
+	
+	override void loadoutconfigure(string input){
+		int dual=getloadoutvar(input,"dual",1); 
+		if (dual>0) {weaponStatus[0] |= RCTH_DUALACTION;}
+	}
+	
+	
+	action void A_RotateCylinderTH(bool clockwise = true) {
+		invoker.RotateCylinderTH(clockwise);
+		A_StartSound("weapons/thcock2",8,CHANF_OVERLAP);
+	}
+	
+	void RotateCylinderTH(bool clockwise = true) {
+		if(clockwise){
+			int cylbak=weaponstatus[RCTH_CYL1];
+			weaponstatus[RCTH_CYL1]=weaponstatus[RCTH_CYL8];
+			weaponstatus[RCTH_CYL8]=weaponstatus[RCTH_CYL7];
+			weaponstatus[RCTH_CYL7]=weaponstatus[RCTH_CYL6];
+			weaponstatus[RCTH_CYL6]=weaponstatus[RCTH_CYL5];
+			weaponstatus[RCTH_CYL5]=weaponstatus[RCTH_CYL4];
+			weaponstatus[RCTH_CYL4]=weaponstatus[RCTH_CYL3];
+			weaponstatus[RCTH_CYL3]=weaponstatus[RCTH_CYL2];
+			weaponstatus[RCTH_CYL2]=cylbak;
+		} else {
+			int cylbak=weaponstatus[RCTH_CYL1];
+			weaponstatus[RCTH_CYL1]=weaponstatus[RCTH_CYL2];
+			weaponstatus[RCTH_CYL2]=weaponstatus[RCTH_CYL3];
+			weaponstatus[RCTH_CYL3]=weaponstatus[RCTH_CYL4];
+			weaponstatus[RCTH_CYL4]=weaponstatus[RCTH_CYL5];
+			weaponstatus[RCTH_CYL5]=weaponstatus[RCTH_CYL6];
+			weaponstatus[RCTH_CYL6]=weaponstatus[RCTH_CYL7];
+			weaponstatus[RCTH_CYL7]=weaponstatus[RCTH_CYL8];
+			weaponstatus[RCTH_CYL8]=cylbak;
+		}
+	}
+	
+	action void A_OpenCylinderTH(){
+		A_StartSound("weapons/thopen",8);
+		invoker.cylinderopen=true;
+		A_SetHelpText();
+	}
+	
+	action void A_CloseCylinderTH(){
+		A_StartSound("weapons/thclose",8);
+		invoker.cylinderopen=false;
+		A_SetHelpText();
+	}
+	
+	action void A_ReadyOpenTH() {
+		A_WeaponReady(WRF_NOFIRE|WRF_ALLOWUSER3);
+		if(justpressed(BT_ALTATTACK))setweaponstate("open_rotatecylinder");
+		else if(justpressed(BT_RELOAD)){
+			if(
+				(
+					invoker.weaponstatus[RCTH_CYL1]>0
+					&&invoker.weaponstatus[RCTH_CYL2]>0
+					&&invoker.weaponstatus[RCTH_CYL3]>0
+					&&invoker.weaponstatus[RCTH_CYL4]>0
+					&&invoker.weaponstatus[RCTH_CYL5]>0
+					&&invoker.weaponstatus[RCTH_CYL6]>0
+					&&invoker.weaponstatus[RCTH_CYL7]>0
+					&&invoker.weaponstatus[RCTH_CYL8]>0
+				)||(
+					!countinv("HD500SWLightAmmo")
+					&&!countinv("HD500SWHeavyAmmo")
+				)
+			)setweaponstate("open_closecylinder");
+			else setweaponstate("open_loadround");
+		}else if(justpressed(BT_ATTACK))setweaponstate("open_closecylinder");
+		else if(justpressed(BT_UNLOAD)){
+			if(!invoker.cooldown){
+				setweaponstate("open_dumpcylinder");
+				invoker.cooldown=6;
+			}else{
+				setweaponstate("open_dumpcylinder_all");
+			}
+		}
+		if(invoker.cooldown>0)invoker.cooldown--;
+	}
+	
+	action void A_LoadRoundTH(){
+		if(invoker.weaponstatus[RCTH_CYL1]>0)return;
+		bool usewildcat=(
+			player.cmd.buttons&BT_FIREMODE
+			||!countinv("HD500SWLightAmmo")
+		);
+		if(usewildcat&&!countinv("HD500SWHeavyAmmo"))return;
+		class<inventory>ammotype=usewildcat?"HD500SWHeavyAmmo":"HD500SWLightAmmo";
+		A_TakeInventory(ammotype,1,TIF_NOTAKEINFINITE);
+		invoker.weaponstatus[RCTH_CYL1]=usewildcat?RCTH_WILDLOADED:RCTH_SWLOADED;
+		A_StartSound("weapons/thload",8,CHANF_OVERLAP);
+	}
+	
+	action void A_HitExtractorTH(){
+		double cosp=cos(pitch);
+		for(int i=RCTH_CYL1;i<=RCTH_CYL8;i++){
+			int thischamber=invoker.weaponstatus[i];
+			if(thischamber<1)continue;
+			if(
+				thischamber==RCTH_WILDSPENT
+				||thischamber==RCTH_SWSPENT
+			){
+				actor aaa=spawn("HDSpent500",
+					(pos.xy,pos.z+height-10)
+					+(cosp*cos(angle),cosp*sin(angle),sin(pitch))*7,
+					ALLOW_REPLACE
+				);
+				aaa.vel=vel+(frandom(-1,1),frandom(-1,1),-1);
+				aaa.angle=angle;
+				invoker.weaponstatus[i]=0;
+			}
+		}
+		A_StartSound("weapons/deinoeject",8,CHANF_OVERLAP);
+	}
+	
+	action void A_ExtractAllTH(){
+		double cosp=cos(pitch);
+		bool gotany=false;
+		for(int i=RCTH_CYL1;i<=RCTH_CYL8;i++){
+			int thischamber=invoker.weaponstatus[i];
+			if(thischamber<1)continue;
+			if(
+				thischamber==RCTH_WILDSPENT
+				||thischamber==RCTH_SWSPENT
+			){
+				actor aaa=spawn("HDSpent500",
+					(pos.xy,pos.z+height-14)
+					+(cosp*cos(angle),cosp*sin(angle),sin(pitch)-2)*3,
+					ALLOW_REPLACE
+				);
+				aaa.vel=vel+(frandom(-0.3,0.3),frandom(-0.3,0.3),-1);
+				invoker.weaponstatus[i]=0;
+			}else{
+				class<inventory>ammotype=
+					thischamber==RCTH_WILDLOADED?
+					"HD500SWHeavyAmmo":"HD500SWLightAmmo";
+				if(A_JumpIfInventory(ammotype,0,"null")){
+					actor aaa=spawn(ammotype,
+						(pos.xy,pos.z+height-14)
+						+(cosp*cos(angle),cosp*sin(angle),sin(pitch)-2)*3,
+						ALLOW_REPLACE
+					);
+					aaa.vel=vel+(frandom(-1,1),frandom(-1,1),-1);
+				}else{
+					A_GiveInventory(ammotype,1);
+					gotany=true;
+				}
+				invoker.weaponstatus[i]=0;
+			}
+		}
+		if(gotany)A_StartSound("weapons/pocket",9);
+	}
+	
+	
+	action void A_FireThunderhawk() {
+		invoker.weaponstatus[0] &= ~RCTH_COCKED;
+		int cyl=invoker.weaponstatus[RCTH_CYL1];
+		if(
+			cyl!=RCTH_SWLOADED
+			&&cyl!=RCTH_WILDLOADED
+		){
+			A_StartSound("weapons/thcock",8,CHANF_OVERLAP);
+			return;
+		}
+		invoker.weaponstatus[RCTH_CYL1]--;
+		bool ammoType = (cyl == RCTH_WILDLOADED); 
+		
+		let bbb=HDBulletActor.FireBullet(self,ammoType?"HDB_500LAD":"HDB_500SW",spread:1.,speedfactor:frandom(0.99,1.01));
+		if(
+			frandom(0,ceilingz-floorz)<bbb.speed*(ammoType?0.4:0.3)
+		)
+		A_AlertMonsters();
+		A_GunFlash();
+		A_Light1();
+		A_ZoomRecoil(0.995);
+		A_StartSound("weapons/thfire",CHAN_WEAPON,CHANF_OVERLAP);
+		if (hd_odr_threcoildamage) {
+			if (invoker.wristpain > 0) {
+				DamageMobj(invoker,self,invoker.wristpain,"recoil");
+				if (invoker.wristpain > 20) {
+					self.DropInventory(invoker);
+				}
+			}
+			invoker.wristpain += ammotype?random(7,15):random(5,10);
+		}
+		if(hdplayerpawn(self)){
+			hdplayerpawn(self).gunbraced=false;
+		}
+		if(ammoType){
+			A_MuzzleClimb(-frandom(4.8,9.6),-frandom(9.6,12.8));
+		}else{
+			A_MuzzleClimb(-frandom(4.0,8.0),-frandom(4.8,9.6));
+		}
+	}
+	
+	action void A_RecoilReadyTH() {
+		if (!GetCVar("hd_odr_thautofire")) {
+			if (JustPressed(BT_ALTATTACK)) {
+				SetWeaponState("altfire");
+			} else if (JustPressed(BT_ATTACK)) {
+				SetWeaponState("fire");
+			}
+		}
+	}
+	
+	action void A_CheckForFanning() {
+		if (PressingFire()) {
+			if (GetCVar("hd_odr_thautofire")){
+				if (PressingAltfire()) {
+					SetWeaponState("fanshot");
+				} else {
+					SetWeaponState("fire");
+				}
+			} else {
+				if (JustPressed(BT_ALTATTACK)){
+					SetWeaponState("fanshot");
+				}
+			}
+		}
+	}
+	
+	action void A_RestWrists() {
+		if (invoker.wristpain > 0) {
+			invoker.wristpain--;
+		}
+	}
+	
+	states {
+		spawn:
+			RCTH A -1;
+			stop;
+			
+		select0:
+			RCTH B 0 {
+				invoker.wristpain=0;
+				invoker.cylinderopen = false;
+				if(findinventory("SpareWeapons")){
+					let spw=SpareWeapons(findinventory("SpareWeapons"));
+					for(int i=0;i<spw.weapontype.size();i++){
+						if(spw.weapontype[i]==invoker.getclassname()){
+							string spw2=spw.weaponstatus[i];
+							string spw1=spw2.left(spw2.indexof(","));
+							spw2=spw2.mid(spw2.indexof(","));
+							int stat0=spw1.toint();
+							stat0&=~BUGF_COCKED;
+							spw.weaponstatus[i]=stat0..spw2;
+						}
+					}
+				}
+			}
+			RCTH B 1 A_Raise();
+			RCTH B 1 A_Raise(40);
+			RCTH B 1 A_Raise(40);
+			RCTH B 1 A_Raise(25);
+			RCTH B 1 A_Raise(20);
+			wait;
+		
+	deselect0:
+		RCTH J 0 A_JumpIf(!invoker.cylinderopen,"deselect0a");
+		RCTR L 1 A_CloseCylinder();
+		RCTR MNOPQRS 1;
+		goto deselect0a;
+	deselect0a:
+		RCTH J 1 A_Lower();
+		RCTH J 1 A_Lower(20);
+		RCTH J 1 A_Lower(34);
+		RCTH J 1 A_Lower(50);
+		wait;
+		
+	ready:
+		RCTH J 0 {invoker.fanning = false;}
+		---- J 0 A_JumpIf(invoker.cylinderopen,"readyopen");
+		#### B 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,2);
+		#### J 0;
+		---- J 0 A_RestWrists();
+		---- J 1 {
+			A_CheckForFanning();
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2|WRF_ALLOWUSER3|WRF_ALLOWUSER4);
+		}
+		goto readyend;
+		
+	readyopen:
+		RCTR K 1 A_ReadyOpenTH();
+		---- K 0 A_RestWrists();
+		goto readyend;
+		
+	fire:
+		#### B 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,"hammertime");
+		#### B 0 A_JumpIf(!(invoker.weaponstatus[0]&RCTH_DUALACTION), "nohammer");
+		#### B 0 {
+			A_RotateCylinderTH();
+			A_MuzzleClimb(-frandom(1.2,2.4),-frandom(2.4,4.2));
+		}
+	hammertime:
+		#### J 1 A_FireThunderhawk();
+		#### J 0 A_Refire();
+		goto nope;
+	firerecoil:
+		#### CD 1 A_WeaponReady(WRF_NOFIRE | WRF_NOSWITCH);
+		#### EFGHIJ 1 A_RecoilReadyTH();
+		#### J 0 A_ReFire();
+		goto nope;
+	flash:
+		TNT1 A 1 bright;
+		---- A 0 A_Light0();
+		---- A 0 {
+			if (invoker.fanning) {
+				SetWeaponState("fanrecoil");
+			} else {
+				SetWeaponState("firerecoil");
+			}
+		}
+		stop;
+	
+	nohammer:
+		RCTH J 0 A_StartSound("weapons/thtrigger",8,CHANF_OVERLAP);
+		goto hold;
+		
+	hold:
+		RCTH B 0;
+		#### B 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,2);
+		#### J 0;
+		---- J 1 {
+			A_CheckForFanning();
+			A_RestWrists();
+		}
+		---- J 0 A_Refire();
+		goto nope;
+		
+	altfire:
+		---- J 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,"uncock");
+		#### K 1 A_CheckForFanning();
+		#### L 1 A_RotateCylinderTH();
+	cocked:
+		#### M 1 A_CockHammer();
+		#### N 1;
+		goto nope;
+	uncock:
+		#### R 1;
+		#### Q 1;
+		#### P 1 A_StartSound("weapons/thcock",8,CHANF_OVERLAP);
+		#### O 1 A_CockHammer(false);
+		goto nope;
+		
+	fanshot:
+		RCTF A 1 {invoker.fanning = true;}
+		RCTF C 1 A_RotateCylinderTH();
+		RCTF E 1 A_FireThunderhawk();
+		RCTF JKLM 1;
+		RCTF M 0 A_Refire();
+		goto nope;
+		
+	fanrecoil:
+		RCTF HI 1 A_WeaponReady(WRF_NOFIRE | WRF_NOSWITCH);
+		RCTF JKLM 1 A_RecoilReadyTH();
+		RCTF M 0 A_Refire();
+		goto nope;
+		
+	althold:
+		RCTH B 0;
+		#### B 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,2);
+		#### J 0;
+		---- J 1 {
+			A_CheckForFanning();
+			A_RestWrists();
+		}
+		---- J 0 A_Refire();
+		goto nope;
+		
+	reload:
+	unload:
+		RCTH B 0 A_JumpIf(invoker.weaponstatus[0]&RCTH_COCKED,"openanim");
+		#### OPQ 1;
+		RCTH R 2;
+	openanim:
+		RCTR ABC 1;
+		#### D 1 A_OpenCylinderTH();
+		#### EFGHIJK 1;
+		goto readyopen;
+		
+	open_rotatecylinder:
+		RCTR K 2 A_RotateCylinderTH(pressingzoom());
+		RCTR K 2 A_JumpIf(!pressingaltfire(),"readyopen");
+		loop;
+		
+	open_loadround:
+		RCTR K 2;
+		RCTR K 1 A_LoadRoundTH();
+		goto open_rotatecylinder;
+		
+	open_closecylinder:
+		RCTR KL 1;
+		#### M 1 A_CloseCylinderTH();
+		#### NOPQRS 1;
+		goto nope;
+		
+	open_dumpcylinder:
+		RCTR K 3 A_HitExtractorTH();
+		goto readyopen;
+		
+	open_dumpcylinder_all:
+		RCTR K 1 offset(0,34);
+		RCTR K 1 offset(0,42);
+		RCTR K 1 offset(0,54);
+		RCTR K 1 offset(0,68);
+		TNT1 A 6 A_ExtractAllTH();
+		RCTR K 1 offset(0,68);
+		RCTR K 1 offset(0,54);
+		RCTR K 1 offset(0,42);
+		RCTR K 1 offset(0,34);
+		goto readyopen;
+		
+	user1:
+	user2:
+		goto nope;
+	}
+}
+
+enum ThunderhawkStats {
+	RCTH_CYL1 = 1,
+	RCTH_CYL2 = 2,
+	RCTH_CYL3 = 3,
+	RCTH_CYL4 = 4,
+	RCTH_CYL5 = 5,
+	RCTH_CYL6 = 6,
+	RCTH_CYL7 = 7,
+	RCTH_CYL8 = 8,
+
+	RCTH_EMPTY = 0,
+	RCTH_SWSPENT = 1,
+	RCTH_SWLOADED = 2,
+	RCTH_WILDSPENT = 3,
+	RCTH_WILDLOADED = 4,
+	
+	RCTH_DUALACTION = 1,
+	RCTH_COCKED = 2,
+}
+
+class HDThunderhawkRandom : IdleDummy {
+	states {
+		spawn:
+			TNT1 A 0 nodelay {
+				let wpn = HDThunderhawk(Spawn("HDThunderhawk", pos, ALLOW_REPLACE));
+				HDF.TransferSpecials(self,wpn,HDF.TS_ALL);
+				wpn.vel = vel;
+				if (random(0, 99) < hd_odr_thdualaction){
+					wpn.weaponStatus[RCTH_DUALACTION] = true;
+				}
+			}
+			stop;
+	}
+}

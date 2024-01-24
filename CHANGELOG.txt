@@ -1,0 +1,81 @@
+==== vDemo-2 ====
+New Items:
+- Ardentipedes/Caster Imps now drop Scrolls. When opened, these spells will give
+  instructions on how to cast a spell, and can either be used on the spot for a
+  single burst of magic, or attuned to the Gate of Anthrakia for longer-term
+  magical applications.
+    - Added the spell "Winds of Libidine", which is accessible via scroll only
+	  by default.
+	- Added a new customization option that allows the Gate of Anthrakia to 
+	  start with different assortments of spells.
+
+Fixes:
+- Fixed a bug where O:DR attempted to replace items that were already replaced,
+  resulting in VM Aborts.
+- Fixed a bug where the Grasa could spawn an empty mag out of the aether if
+  reloading with nothing in your inventory.
+- Fixed a bug where the Nimurdal wasn't associated with its weapon and would
+  be dropped when using the "Purge Useless Ammo" command.
+- Grasa Mags and arrows now correctly use the Language files for their pickup 
+  messages.
+
+Changes:
+- All weapons with loadout codes now display them in the Loadout Manager.
+    - Hideous Destructor v4.7.1c or higher is now required.
+
+- Reduced the base spread of the Cintia 1901. (9.0->8.0)
+- Reduced the scaling for the Cintia 1901's choke to be consistent with the 
+  Hunter. (0.75->0.5)
+- The Cintia 1901's lever animation has been adjusted; the weapon now remains 
+  closer to the ready position during lever action.
+- Significantly sped up the Cintia 1901's lever. (10->7)
+- Sound effects for the Cintia 1901's lever should line up more clearly with the
+  animation.
+- Added a sound cue to the Cintia 1901 for the chamber cycling. (This should
+  make judging the timing easier.)
+- Added a subtle camera shift to the lever sequence.
+- Added a clearer "jamming" sequence when short-stroking the Cintia 1901.
+- The Cintia 1901's lever is now held open if you hold down altfire.
+- The Cintia 1901 now properly ejects the shell when the lever is fully opened, 
+  rather than as it's closing.
+- The Cintia 1901 can now slamfire by holding Fire and working the lever.
+
+- Added a new sprite for a Grasa with no mag inserted.
+- Increased the window before the Grasa determines whether or not to pocket a 
+  magazine while reloading/unloading. (4->6)
+- Added an indicator to the HUD to show when the Grasa suffers a Failure to
+  Eject.
+- Sound cues for the Grasa suffering a Failure to Eject should no longer be 
+  drowned out by the firing sounds
+- The Grasa M-12's base rate of fire has been significantly reduced (2->5)
+- The Grasa M-12 will now occasionally spawn with different parts
+    - Hacked Bolt (1): The bolt has been modified to increase rate of fire, but 
+	  wears out much faster.
+	- Improved Bolt Assembly (2): The bolt wears out at half the normal rate, 
+	  reducing Failure to Eject errors.
+    - You can choose to start with these mods with the "modtype" loadout 
+	  variable, and options have been added to adjust the spawnrate.
+	- These mods stack; use "modtype 3" to start with both.
+- Zombies carrying the Grasa now reflect the lower fire rate, and can spawn 
+  with modified Grasa variants.
+
+- Reduced the density of flames spawned by Pit of Eresia. (This should help 
+  some machines with performance.)
+
+- Holding the Heki at full draw builds fatigue instead of simply causing your
+  aim to shake.
+    - You will automatically release your draw if your fatigue is too high.
+
+==== vDemo ====
+- First version released!
+- Added 8 new weapons
+	- R&C Thunderhawk
+	- Cintia 1901
+	- Montaraz 1899
+	- Grasa M-12
+	- Gate of Anthrakia
+	- Mask of Basilissa
+	- 'Heki' Hunting Bow
+	- 'Nimurdal' Boomerang
+- Added 1 new enemy type
+	- Zombie Stormtrooper (with Grasa M-12)

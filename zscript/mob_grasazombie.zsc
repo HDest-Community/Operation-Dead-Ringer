@@ -1,0 +1,100 @@
+
+class ZombieGrasaStormtrooper : ZombieStormtrooper {
+
+	override void postbeginplay(){
+		super.postbeginplay();
+		firemode=0;
+		if (!accuracy){
+			accuracy = 0;
+			if (random(0, 99) < hd_odr_grasahackchance) { 
+				accuracy |= GRASM_HACKEDROF; 
+			}
+			if (random(0, 99) < hd_odr_grasaqualitychance) { 
+				accuracy |= GRASM_DURABLE; 
+			}
+		}
+		if (hd_debug) {
+			console.printf("%s %i %s", "Spawned a Stormtrooper with a Grasa (Model: ",accuracy,")");
+		}
+		mag=random(1,30);
+		A_SetTranslation("ZombieGrasa");
+	}
+
+	override void deathdrop(){
+		if(bhasdropped&&bfriendly)return;
+		hdweapon wp=null;
+		if(!bhasdropped){
+			if(wp=DropNewWeapon("HDGrasa")){
+				wp.weaponstatus[GRASA_MAG]=mag;
+				wp.weaponstatus[GRASA_CHAMBER]=2;
+				wp.weaponstatus[GRASA_MODTYPE]=accuracy;
+				wp.weaponstatus[GRASA_BOLTWEAR]=random(0,1000);
+				if (accuracy&GRASM_DURABLE) {wp.weaponstatus[GRASA_BOLTWEAR] /= 2;}
+				wp.weaponstatus[GRASA_FEEDWEAR]=random(0,1000);
+			}
+			DropNewItem("HDFragGrenadeAmmo",8);
+			DropNewItem("HDFragGrenadeAmmo",4);
+			DropNewItem("HD45ACPMag30");
+		}else{
+			DropNewItem("HD45ACPMag30",240);
+			DropNewItem("HD45ACPMag30",128);
+			DropNewItem("HDFragGrenadeAmmo",4);
+			DropNewItem("HDFragGrenadeAmmo",4);
+		}
+		if(!bhasdropped){
+			DropNewItem("HDHandgunRandomDrop");
+			bhasdropped=true;
+		}
+	}
+
+	states {
+		shoot:
+		#### F 1 A_JumpIf(jammed,"jammed");
+		#### F 1 bright light("SHOT"){
+			if(mag<1){
+				setstatelabel("ohforfuckssake");
+				return;
+			}
+			A_StartSound("weapons/grasafire",CHAN_WEAPON);
+			HDBulletActor.FireBullet(self,"HDB_45ACP");
+			if(!(accuracy&GRASM_DURABLE) && random(0,1000)<5){
+				jammed=true;
+				A_StartSound("weapons/grasaclosebolt",5);
+				setstatelabel("jammed");
+			}
+			pitch+=frandom(-spread,spread*0.5)*0.3;
+			angle+=frandom(-spread*0.5,spread)*0.3;
+			mag--;
+		}
+		#### E 0{
+			if(!(accuracy&GRASM_HACKEDROF)) {A_SetTics(3);}
+		}
+		#### A 0 A_Jump(120,"shoot");
+		goto postshot;
+		
+		reload:
+			---- A 0 A_JumpIf(mag<0,"unloadedreload");
+			---- A 4{
+				A_StartSound("weapons/grasaopenbolt");
+				bfrightened=true;
+			}
+			#### AA 1 A_HDChase("melee",null);
+			#### A 0{
+				A_StartSound("weapons/grasaunload");
+				name emptymag="HD45ACPMag30";
+				HDMagAmmo.SpawnMag(self,emptymag,0);
+				mag=-1;
+			}
+		unloadedreload:
+			#### BCD 2 A_HDChase("melee",null);
+			#### E 12 A_StartSound("weapons/pocket",8);
+			#### E 8 A_StartSound("weapons/grasaload",9);
+			#### E 2{
+				A_StartSound("weapons/grasaclosebolt",8);
+				mag=30;
+				bfrightened=false;
+			}
+			#### CCBB 2 A_HDWander();
+			goto see;
+	}
+}

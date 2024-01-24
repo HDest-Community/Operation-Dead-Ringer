@@ -1,0 +1,261 @@
+/**
+==== 'NIMURDAL' BOOMERANG ====
+- Loadout Code: nmd
+- Ammo Type: Boomerangs
+- Modifiers: None
+
+Humanity has been wondering for the longest time how to punch a man from across 
+the room, and this is about the closest they've gotten to a solution. Wind up, 
+charge forward, and send this winged wonder soaring across the room and into 
+unsuspecting heads at an astonishing pace. The best part? Simple, durable 
+construction means you can pick her up, dust her off, and keep breaking skulls 
+as much as you'd like. And when bullets are scarce, it's good to have something
+you can trust to get the job done.
+**/
+
+class HDBoomerangThrower : HDWeapon {
+	default {
+		+weapon.no_auto_switch 
+		+weapon.noalert 
+		+weapon.wimpy_weapon
+		+hdweapon.dontdisarm
+		+hdweapon.dontnull
+		+nointeraction
+		weapon.slotnumber 0;
+		weapon.bobstyle "Alpha";
+		weapon.bobspeed 2.5;
+		weapon.bobrangex 0.1;
+		weapon.bobrangey 0.5;
+		tag "$TAG_NIMURDAL";
+		obituary "$OBIT_NIMURDAL";
+	}
+	
+	override string,double getpickupsprite(){return "NMRDA0",0.6;}
+	
+	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
+		if(sb.hudlevel==1){
+			sb.drawimage("NMRDA0",(-52,-4),sb.DI_SCREEN_CENTER_BOTTOM,scale:(0.6,0.6)
+			);
+			sb.drawnum(hpl.countinv("HDBoomerangAmmo"),-45,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+		}
+		sb.drawwepnum(
+			hpl.countinv("HDBoomerangAmmo"),(HDCONST_MAXPOCKETSPACE/ENC_FRAG));
+		sb.drawwepnum(hdw.weaponstatus[NMRDL_FORCE],50,posy:-10,alwaysprecise:true);
+	}
+	
+	override string gethelptext(){
+		return
+		WEPHELP_FIRE.."  Wind up, release to throw\n";
+	}
+	
+	override inventory CreateTossable(int amt){
+		owner.A_DropInventory("HDBoomerangAmmo",owner.countinv("HDBoomerangAmmo"));
+		owner.A_GiveInventory("HDFist");
+		owner.A_SelectWeapon("HDFist");
+		return null;
+	}
+	
+	override void DropOneAmmo(int amt){
+		if(owner){
+			amt=clamp(amt,1,10);
+			owner.A_DropInventory("HDBoomerangAmmo",1);
+		}
+	}
+	
+	override void ForceBasicAmmo(){
+		owner.A_SetInventory("HDBoomerangAmmo",1);
+	}
+	
+	void ThrowBoomerang() {
+		if (!owner) {return;}
+		bool spawned; 
+		Actor rang;
+		double opSin = sin(owner.pitch);
+		double opCos = cos(owner.pitch);
+		[spawned, rang] = owner.A_SpawnItemEX("HDBoomerangProjectile",
+			0, 0, owner.height*0.88, opCos*4, 0, -opSin*4, 0,
+			SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH);
+		rang.vel += owner.vel*1.5;
+		
+		double rangForce=clamp(weaponstatus[NMRDL_FORCE]*0.5,1,40+owner.health*0.1);
+		rangForce *= hd_odr_nimurdalthrowspeed;
+		if(hdplayerpawn(owner))rangForce*=hdplayerpawn(owner).strength;
+		
+		if(owner.player){
+			rang.vel+=SwingThrow()*rangForce*1.5;
+		}
+		
+		rang.a_changevelocity(
+			opCos*rangForce*4.0,
+			0,
+			-opSin*rangForce*4.0,
+			CVF_RELATIVE
+		);
+	}
+	
+	// Swing Throw taken from HD's grenades because fuck reinventing the wheel
+	vector3 SwingThrow(){
+		vector2 iyy=(owner.angle,owner.pitch);
+		double cosp=cos(iyy.y);
+		vector3 oldpos=(
+			cosp*cos(iyy.x),
+			cosp*sin(iyy.x),
+			sin(iyy.y)
+		);
+		iyy+=(
+				owner.getplayerinput(MODINPUT_YAW),
+				owner.getplayerinput(MODINPUT_PITCH)
+			)
+			*(360./65536.);
+		cosp=cos(iyy.y);
+		vector3 newpos=(
+			cosp*cos(iyy.x),
+			cosp*sin(iyy.x),
+			sin(iyy.y)
+		);
+		return newpos-oldpos;
+	}
+	
+	states {
+		select0:
+			TNT1 A 0 A_JumpIf(!CountInv("HDBoomerangAmmo"), "norangs");
+			TNT1 A 8 {
+				if(!countinv("NulledWeapon"))A_SetTics(tics+4);
+				A_TakeInventory("NulledWeapon");
+				invoker.weaponstatus[NMRDL_FORCE]=0;
+			}
+			FRGG B 1 A_Raise(32);
+			wait;
+			
+		deselect0:
+			---- A 1 A_JumpIf(!CountInv("HDBoomerangAmmo"), "deselectinstant");
+			---- A 1 A_Lower(72);
+			wait;
+		deselectinstant:
+			TNT1 A 0 A_Lower(999);
+			wait;
+		
+		norangs:
+			TNT1 A 0 A_WeaponBusy(false);
+		readytodonothing:
+			TNT1 A 0 A_JumpIf(pressing(BT_SPEED)||pressingfire()||pressingaltfire()||pressingreload()||pressingzoom(),2);
+			TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
+			loop;
+			TNT1 A 0 A_SelectWeapon("HDFist");
+			TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
+			wait;
+		
+		ready:
+			FRGG B 1 A_WeaponReady(WRF_ALL);
+			---- A 0 A_WeaponBusy(false);
+			goto readyend;
+		
+		fire:
+			FRGG B 0 A_JumpIf(!CountInv("HDBoomerangAmmo"), "norangs");
+		hold:
+			FRGG B 0 {
+				if (invoker.weaponStatus[NMRDL_FORCE] < 50)
+					{invoker.weaponStatus[NMRDL_FORCE]++;}
+					
+				if (invoker.weaponStatus[NMRDL_FORCE] > 40) 
+					{SetWeaponState("holdstrong");}
+				else if (invoker.weaponStatus[NMRDL_FORCE] > 30) 
+					{SetWeaponState("holdmid");}
+				else if (invoker.weaponStatus[NMRDL_FORCE] > 20) 
+					{SetWeaponState("holdweak");}
+				}
+			FRGG B 1;
+			---- B 0 A_Refire();
+		holdweak:
+			FRGG C 1;
+			---- C 0 A_Refire();
+			goto throw;
+		holdmid:
+			FRGG D 1;
+			---- D 0 A_Refire();
+			goto throw;
+		holdstrong:
+			FRGG E 1;
+			---- E 0 A_Refire();
+			goto throw;
+		throw:
+			TNT1 A 4 {
+				A_StartSound("weapons/boomerangthrow", CHAN_WEAPON);
+				A_TakeInventory("HDBoomerangAmmo", 1);
+				invoker.ThrowBoomerang();
+				invoker.weaponStatus[NMRDL_FORCE] = 0;
+			}
+			---- A 0 A_JumpIf(!CountInv("HDBoomerangAmmo"), "norangs");
+			goto ready;
+	}
+}
+
+enum NimurdalStats {
+	NMRDL_FORCE = 1,
+}
+
+class HDBoomerangAmmo : HDAmmo {
+	default {
+		//$Category "Ammo/Hideous Destructor/"
+		//$Title "'Nimurdal' Boomerang"
+		//$Sprite "NMRFA0"
+		+forcexybillboard
+		inventory.icon "NMRFA0";
+		inventory.amount 1;
+		scale 1.0;
+		inventory.maxamount 50;
+		inventory.pickupmessage "$PICKUP_NIMURDAL";
+		inventory.pickupsound "weapons/pocket";
+		tag "$TAG_NIMURDAL";
+		hdpickup.refid "nmd";
+		hdpickup.bulk 7;
+	}
+
+	override void GetItemsThatUseThis() {
+		itemsThatUseThis.push("HDBoomerangThrower");
+	}
+	
+	override string pickupmessage() {
+		return StringTable.Localize(super.pickupmessage());
+	}
+
+	override void AttachToOwner(Actor other) {
+		if (!other.countinv("HDBoomerangThrower")) {
+			other.giveinventory("HDBoomerangThrower", 1);
+		}
+		super.AttachToOwner(other);
+	}
+	
+	states {
+		spawn:
+			NMRD A -1;
+			stop;
+	}
+}
+
+class HDBoomerangProjectile : SlowProjectile {
+	default {
+	-NOGRAVITY
+	mass 2000;
+	gravity 0.1;
+	speed 60;
+	}
+	
+	states {
+		spawn:
+			NMRF A 0;
+			NMRF A 0 A_StartSound("weapons/boomerangfly", CHAN_VOICE, CHANF_LOOPING);
+		spawnloop:
+			NMRF ABCDEFGH 1 {speed = vel.Length();}
+			loop;
+			
+		death:
+			NMRF A 0 {
+				A_AlertMonsters(128);
+				A_StartSound("weapons/boomerangslam", CHAN_VOICE);
+				let drop = Spawn("HDBoomerangAmmo", pos, ALLOW_REPLACE);
+				drop.vel = vel*0.5;
+			}
+			stop;
+	}
+}

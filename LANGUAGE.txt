@@ -1,0 +1,55 @@
+[enu default]
+
+TAG_THUNDERHAWK = "R&C Thunderhawk";
+TAG_CINTIA = "Cintia 1901";
+TAG_MONTARAZ = "Montaraz 1899";
+TAG_GRASA = "Grasa M-12";
+TAG_HELLSTAFF = "Gate of Anthrakia";
+TAG_BASILISSA = "Mask of Basilissa";
+TAG_HEKI = "'Heki' Hunting Bow";
+TAG_NIMURDAL = "'Nimurdal' Boomerangs";
+
+PICKUP_THUNDERHAWK = "You got the R&C Thunderhawk!";
+PICKUP_CINTIA = "You got the Cintia 1901!";
+PICKUP_MONTARAZ = "You got the Montaraz 1899!";
+PICKUP_GRASA = "You got the Grasa M-12!";
+PICKUP_GRASAHACKED = "You notice some tool markings near the cocking handle...";
+PICKUP_GRASAQUALITY = "This one looks promising...";
+PICKUP_HELLSTAFF = "You got the Gate of Anthrakia!";
+PICKUP_BASILISSA = "You got the Mask of Basilissa, Queen of Phlegethon! ...Oh, no...";
+PICKUP_HEKI = "You got the 'Heki' hunting bow!";
+PICKUP_NIMURDAL = "You got the 'Nimurdal' boomerang!";
+
+PICKUP_GRASACLIP = "Picked up a Grasa M-12 clip.";
+PICKUP_ARROW = "Picked up an arrow.";
+PICKUP_ARROWBUNDLE = "Picked up a bundle of arrows.";
+PICKUP_RUNEPHLEGETHON = "Picked up a Rune of Phlegethon.";
+
+OBIT_THUNDERHAWK = "%o stared down the barrel of %k's R&C Thunderhawk.";
+OBIT_CINTIA = "%o was shot down by %k's Cintia 1901.";
+OBIT_MONTARAZ = "%o was blown to bits by %k's Montaraz 1899.";
+OBIT_GRASA = "%o said goodbye to %k's Grasa M-12.";
+OBIT_HELLSTAFF = "%o was condemned by %k's Gate of Anthrakia.";
+OBIT_BASILISSA = "%o knelt to %k's Mask of Basilissa.";
+OBIT_HEKI = "%o was penetrated by %k's Heki hunting bow.";
+OBIT_NIMURDAL = "%o was broken down by %k's Nimurdal boomerang.";
+
+GRASA_UNLOAD = "You need to unload this weapon completely before repairing it.";
+GRASA_GOODCONDITION = "Everything seems to be in working order.";
+GRASA_BOLTDAMAGED = "The bolt appears to be worn with use.";
+GRASA_FEEDDAMAGED = "The ammo feed has seen better days.";
+GRASA_BOLTBROKEN = "The bolt in this thing is heavily damaged...";
+GRASA_FEEDBROKEN = "The ammo feed looks to be seriously gunked up...";
+GRASA_ALLBROKEN = "The whole gun is a sorry mess...";
+GRASA_BOLTTWEAK = "You might be able to clean up the bolt a bit...";
+GRASA_FEEDTWEAK = "You might be able to clean up the feed a bit...";
+GRASA_REPAIRING1 = "Nothing a little elbow grease won't solve.";
+GRASA_REPAIRING2 = "Better fix this before it gets worse.";
+GRASA_REPAIRING3 = "You're going to need your tools for this one.";
+GRASA_REPAIRING4 = "Can you even fix this thing at this point? Only one way to find out.";
+GRASA_BOLTFINISHED = "The bolt's good to go.";
+GRASA_BOLTSTOP = "The bolt still needs work, but it should function for now.";
+GRASA_BOLTSTOPBAD = "The bolt still needs a lot of work. Hopefully it will hold together.";
+GRASA_FEEDFINISHED = "The feed should work good as new now.";
+GRASA_FEEDSTOP = "The feed still needs work, but it should work fine for now.";
+GRASA_FEEDSTOPBAD = "The feed's still pretty messed up. You're going to need some more time.";

@@ -1,0 +1,130 @@
+ =========================== OPERATION: DEAD RINGER =========================== 
+ =================== MILITARY STRATEGY MEETS THE WEIRD WEST ===================
+ 
+ ================================== FOREWORD ==================================
+ 
+    I'm going to be honest with you: When I pitched this idea to Terminus a 
+ month back, I wasn't expecting to get nearly as invested in seeing this 
+ through as I did. I was just going to make a couple funny and questionably 
+ practical guns to teach myself how to work in ZScript.
+ 
+     My first mistake was not hearing the echo in the room, but I digress. 
+ 
+     What you see before you now is a month's worth of brushing up on my Doom
+ modding skills, learning the intricacies of HDest weapon design, and blowing
+ myself up with hellfire. Hopefully you'll have as much fun briging some good 
+ old-fashioned frontier justice to your Hideous Destructor playthroughs as I 
+ did making it. And stay tuned, because I've got a lot more ideas that will be
+ making their way into this mod soon.
+ 
+     ...After I take a break for a bit. I'm friggin' exhausted right now.
+ 
+ ============================== LOADING THIS MOD ==============================
+ This mod requires the following to run:
+ 
+ GZDoom 4.7.1:
+	https://zdoom.org/downloads
+ 
+ Hideous Destructor (v4.7.1c or higher required): 
+     https://codeberg.org/mc776/hideousdestructor/src/branch/main
+	 
+ BulletLib:
+     https://gitlab.com/accensi/hd-addons/hdbulletlib
+	 
+ Load everything into your launcher of choice and go to town!
+	 
+ ================================ HOW TO PLAY =================================
+ 
+     This mod adds eight new weapons, which occasionally spawn in place of the
+ standard Hideous Destructor fare. It also adds a new enemy (technically a 
+ variation on the standard Zombie Stormtrooper) which uses one of these weapons
+ and will drop a copy when killed.
+	
+     If you're feeling a bit impatient and want to mess with the new toys right
+ away, each new weapon comes with loadout codes. You can check each weapon's 
+ individual .zsc file (in the "zscript" folder) for more information.
+ 
+     Want to change how weapon spawning works, or perhaps you want to make some
+ adjustments to the gameplay to suit your style? Check out the Operation: Dead
+ Ringer Settings menu under HD Options for an absolute mountain of gameplay-
+ related tweaks.
+
+ ============================== TIPS AND TRICKS ===============================
+
+ ~ R&C Thunderhawk ~
+ - The Thunderhawk is an absolute powerhouse of a sidearm, but is slower to 
+   unload and doesn't spawn with extra ammo like some other weapons do. Manage 
+   your shots wisely, because you won't be getting a lot of them.
+ - You can fan the Thunderhawk by holding down the trigger and pressing Altfire 
+   to quickly operate the hammer. This will seriously hurt your wrist and 
+   potentially knock the gun out of your grip if you don't have any sort of 
+   mystical protection; use this trick as a last resort against tougher foes.
+ 
+ ~ Cintia 1901 ~
+ - Even without a shoulder strap, the Cintia is one of the fastest-drawing 
+   weapons in your arsenal apart from the Nimurdal. Swapping to the Cintia is
+   often faster than reloading other weapons.
+ - Mind the longer stroke on the Cintia's lever compared to the Hunter; short-
+   stroking the Cintia will completely lock up the weapon until you complete a 
+   full stroke, so it pays to learn the rhythm before you put yourself in an
+   embarassing spot mid-battle.
+ 
+ ~ Montaraz 1899 ~
+ - The Montaraz shares the lightning-fast draw speed of a sidearm, but with 
+   double-barreled power. You can use it to quickly take out enemies attempting 
+   to ambush you.
+ - Holding both Reload keys will allow you to quickly load both barrels.
+ - Thanks to a design flaw, the Montaraz can technically hold a second shell in
+   each barrel. This is a serious violation of gun safety and should not be 
+   attempted, both in game and in real life.
+ 
+ ~ Grasa M-12 ~
+ - The Grasa has two components that deteriorate with extensive use: the bolt 
+   wears down, and the ammo feed builds up with grime and burnt powder. You'll 
+   need to perform the repair process twice to return the weapon to full 
+   operating condition.
+ - Zombie Troopers are occasionally found wielding the Grasa, and most humanoid
+   enemies have a chance to drop one on death. If your Grasa is breaking down,
+   it may be faster to pick up a new one from an enemy rather than trying to
+   fix your current one.
+ 
+ ~ Gate of Anthrakia ~
+ - Opening gates to the depths of Hell has a chance to release Frag sparks into 
+   the air. Use your spells wisely to reduce the risk of enemies reviving at 
+   inconvenient times.
+ - Extensive use of the Gate of Anthrakia burns away at your soul. A drained 
+   soul can result in excessive fatigue, hallucinations, and a heightened 
+   sensitivity to magic.
+ - Soul drain can be recovered by consuming blues, but the process is... less 
+   than pleasant. Be careful when using the Gate of Anthrakia while under the 
+   influence of healing potions or Soulspheres.
+ - Spiritual Armor significantly reduces the rate at which soul drain occurs. It 
+   may be worth finding a helmet or Megasphere if you intend to use the Gate of 
+   Anthrakia for extended periods of time.
+ - While the Gate of Anthrakia starts with only two spells available, there may
+   be a way to learn more as you adventure...
+ 
+ ~ Mask of Basilissa ~
+ - Even in her sealed state, Basilissa is still a force to be reckoned with.
+   Stand well back when drawing upon her flames, or else you'll light yourself 
+   ablaze along with your foes.
+ - Communing with Basilissa burns away at your soul, but calling upon her power
+   frequently can weaken the seals that bind her to her mask and grant her more
+   powerful abilities. Is the tradeoff worth it? Only one way to find out...
+ - It's more difficult to break Basilissa's seal while wearing Spiritual Armor.
+ 
+ ~ 'Heki' Hunting Bow ~
+ - The Heki normally won't kill enemies outright, but it can punch through armor
+   and leaves massive wounds on hit. Hit tough enemies with an arrow, then hide
+   behind cover and let the blood loss do the rest.
+ - Releasing an arrow too quickly after drawing will reduce its speed and power. 
+   You can use the gauge that appears on the HUD to determine the optimal time 
+   to release an arrow.
+ 
+ ~ 'Nimurdal' Boomerang ~
+ - The Nimurdal's flight pattern is influenced by your movement and camera 
+   velocity when thrown. You can deal more damage by charging at an enemy before
+   releasing your attack.
+ - Swapping to and from the Nimurdal is lightning-fast; if you're not holding a 
+   boomerang, it takes no time at all! Throw your boomerang, then swap to 
+   another weapon and follow up while the enemy is reeling from the blow.

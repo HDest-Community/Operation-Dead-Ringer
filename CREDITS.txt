@@ -1,0 +1,89 @@
+==== CONCEPT ====
+Hideous Destructor by mc776
+	https://codeberg.org/mc776/hideousdestructor
+	
+High Noon Drifter by TerminusEst13
+	https://forum.zdoom.org/viewtopic.php?t=57098
+	
+Go play their mods! They're really cool mods!
+
+==== CODING ====
+Coding by xColdxFusionx, heavily referencing (and occasionally lifting from) 
+	the work of mc776 and TerminusEst13
+
+HDBulletLib by Accensus, Sledge, bogus, PopGuy12
+	
+==== SPRITES ====
+R&C Thunderhawk by Captain J
+
+Cintia 1901 pickup sprite by seclongo, Killing Time
+	Shoulder Sling edit by xColdxFusionx
+Cintia 1901 HUD sprites by Sgt. Shivers, JoeyTD
+
+Montaraz 1899 pickup sprite by Captain J
+Montaraz 1899 HUD sprites by GAA1992, Doom 64, BreadBagfly
+	Muzzleflash edits by xColdxFusionx
+
+Grasa M-12 sprites by Captain J, Mor'ladim
+    No Mag edit by xColdxFusionx
+
+Gate of Anthrakia sprites by Captain J
+
+Mask of Basilissa sprites by Captain J, Mor'ladim
+
+Heki sprites by Captain J, Neoworm
+Arrow projectile sprites from TAO 3D
+
+FLM* sprites from Take No Prisoners
+CFCF and CFFX sprites from Hexen
+
+Scroll sprites by xColdxFusionx
+
+==== SOUNDS ====
+R&C Thunderhawk sounds from... a lot of sources, edited by TerminusEst13
+	- Indiana Jones and the Emperor's Tomb 
+	- Sony Pictures Sound Effects Series
+	- Killing Floor 
+	- Postal 2 
+	- General Series 6000
+	
+Cintia 1901 from FEAR and Killing Floor, edited by TerminusEst13
+    Shell Eject SFX by Ja5on1995 on FreeSound.org
+
+Montaraz 1899 from Gears of War, FEAR
+	Shell SFX by Ja5on1995 on FreeSound.org
+	
+Grasa M-12 from Killing Floor and Devil May Cry 3, edited by TerminusEst13
+
+Nimurdal from... a lot of sources
+	- Sony Pictures Sound Effects Series
+	- Chronicles of Riddick: Assault on Dark Athena
+	- Oblivion
+	- Soniss.com Game Audio Monthly
+	- Fallout: New Vegas
+
+Anthrakia (Fire) from Mortal Kombat X, Painkiller, General Series 6000
+	Edited by TerminusEst13
+
+Additional Anthrakia sounds from:
+    - stewdio2003 on FreeSound.org
+	
+Basilissa SFX from... a lot of sources, edited by TerminusEst13
+	- Neverwinter Nights
+	- General Series 6000
+	- Mortal Kombat X
+	- Street Fighter 4
+	- Sony Pictures Sound Effects Series
+	- Painkiller
+	
+Heki from Sony Pictures Sound Effects Series, Mortal Kombat X, Painkiller
+
+==== SPECIAL THANKS ====
+TerminusEst13, for making High Noon Drifter and assisting the effort with all 
+	the hot, juicy lore that let me fill in the blanks. And also just letting me 
+	bounce ideas off of you sometimes. He's a really cool dude, go play his 
+	stuff.
+
+The Hideous Destructor Discord, for coding advice.
+
+And you, for playing my mod.

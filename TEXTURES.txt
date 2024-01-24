@@ -1,0 +1,8 @@
+Sprite "PRNDB0", 1, 3
+{
+	Offset 1, 3
+	Patch "TEN9A0", 0, -1
+	{
+		Translation "80:111=@72[128,13,0]"
+	}
+}

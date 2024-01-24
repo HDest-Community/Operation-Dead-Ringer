@@ -1,0 +1,487 @@
+/**
+== CINTIA 1901 ==
+- Loadout Code: cin
+- Ammo Type: 12-Gauge Shot
+- Modifiers: Choke (choke<0-7>), Shoulder Sling (sling <0-1>)
+
+Built for home defense and hunting first and foremost, the Cintia 1901 is 
+hand-crafted to be fast and reliable. While the barrel's a bit shorter than 
+other arms in its class, the longer tube and overall lighter weight make for a 
+weapon that's easy to carry and always ready for action. You can even find some
+that have been modified with a shoulder sling for even easier transport and 
+lightning-fast readying speed. Just be careful with the lever; working the 
+action too quickly can occasionally cause parts to jam.
+**/
+
+class HDCintia : HDShotgun {
+	default{
+		//$Category "Weapons/Operation: Dead Ringer"
+		//$Title "Cintia"
+		//$Sprite "CINTA0"
+		weapon.selectionorder 33;
+		weapon.slotnumber 3;
+		weapon.slotpriority 3;
+		weapon.bobrangex 0.21;
+		weapon.bobrangey 0.86;
+		scale 0.6;
+		hdweapon.barrelsize 24,0.5,2;
+		hdweapon.refid "cin";
+		tag "$TAG_CINTIA";
+		obituary "$OBIT_CINTIA";
+		inventory.pickupmessage "$PICKUP_CINTIA";
+
+	
+		hdweapon.loadoutcodes "
+			\cusling - 0/1, set 1 for shoulder sling
+			\cuchoke - 0-7, 0 skeet, 7 full";
+	}
+	
+	override string pickupmessage() {
+		return StringTable.Localize(super.pickupmessage());
+	}
+	
+	override void InitializeWepStats(bool idfa){
+		weaponstatus[CINT_CHAMBER]=2;
+		if(!idfa){
+			weaponstatus[CINT_CHOKE]=1;
+		}
+		weaponstatus[CINT_TUBE]=9;
+		handshells=0;
+	}
+	
+	override void loadoutconfigure(string input){
+		int choke=min(getloadoutvar(input,"choke",1),7);
+		int sling=getloadoutvar(input,"sling",1); 
+		if(choke>=0)weaponstatus[CINT_CHOKE]=choke;
+		
+		weaponStatus[CINT_SLING] = 0;
+		if (sling>0) {weaponStatus[CINT_SLING] = 1;}
+	}
+	
+	static double FireCintia(actor caller,int choke=1){
+		double spread=8.;
+		double speedfactor=1.;
+		let hhh=HDCintia(caller.findinventory("HDCintia"));
+		if(hhh)choke=hhh.weaponstatus[CINT_CHOKE];
+
+		choke=clamp(choke,0,7);
+		spread=8.0-0.5*choke;
+		speedfactor=1.+0.02857*choke;
+
+		double shotpower=getshotpower();
+		spread*=shotpower;
+		speedfactor*=shotpower;
+		HDBulletActor.FireBullet(caller,"HDB_wad");
+		let p=HDBulletActor.FireBullet(caller,"HDB_00",
+			spread:spread,speedfactor:speedfactor,amount:10
+		);
+		distantnoise.make(p,"world/shotgunfar");
+		caller.A_StartSound("weapons/cintiafire",CHAN_WEAPON);
+		return shotpower;
+	}
+
+	action void A_FireCintia() {
+		double shotpower = invoker.FireCintia(self);
+		A_GunFlash();
+		vector2 shotrecoil=(randompick(-1,1),-2.6);
+		shotrecoil*=shotpower;
+		A_MuzzleClimb(0,0,shotrecoil.x,shotrecoil.y,randompick(-1,1)*shotpower,-0.3*shotpower);
+		invoker.weaponstatus[CINT_CHAMBER]=1;
+		invoker.shotpower=shotpower;
+	}
+	
+	override string, double GetPickupSprite(bool usespare) {
+		string finalImage = "CNPUA0";
+		if (weaponStatus[CINT_SLING]) {
+			finalImage = "CNPUB0";
+		} 
+		return finalImage, 1.;
+	}
+	
+	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
+		if(sb.hudlevel==1){
+			sb.drawimage("SHL1A0",(-47,-10),basestatusbar.DI_SCREEN_CENTER_BOTTOM);
+			sb.drawnum(hpl.countinv("HDShellAmmo"),-46,-8,
+				basestatusbar.DI_SCREEN_CENTER_BOTTOM
+			);
+		}
+		if(hdw.weaponstatus[CINT_CHAMBER]>1){
+			sb.drawrect(-24,-14,5,3);
+			sb.drawrect(-18,-14,2,3);
+		}
+		else if(hdw.weaponstatus[CINT_CHAMBER]>0){
+			sb.drawrect(-18,-14,2,3);
+		}
+		sb.drawwepnum(hdw.weaponstatus[CINT_TUBE],9,posy:-7);
+	}
+	
+	override string gethelptext(){
+		return
+		WEPHELP_FIRE.."  Shoot (choke: "..weaponstatus[CINT_CHOKE]..")\n"
+		..WEPHELP_ALTFIRE.."  Work Lever\n"
+		..WEPHELP_RELOAD.."  Reload\n"
+		..WEPHELP_UNLOADUNLOAD
+		;
+	}
+	
+	override void DrawSightPicture(
+		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
+		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
+	){
+		int cx,cy,cw,ch;
+		[cx,cy,cw,ch]=screen.GetClipRect();
+		sb.SetClipRect(
+			-16+bob.x,-32+bob.y,32,40,
+			sb.DI_SCREEN_CENTER
+		);
+		vector2 bobb=bob*2;
+		sb.drawimage(
+			"frntsite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+		);
+		sb.SetClipRect(cx,cy,cw,ch);
+		sb.drawimage(
+			"sgbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9
+		);
+	}
+	
+	override double gunmass(){
+		int tube=weaponstatus[CINT_TUBE];
+		if(tube>4)tube+=(tube-4)*2;
+		return 8+tube*0.3;
+	}
+	
+	override double weaponbulk(){
+		double finalBulk = 110;
+		finalBulk += weaponstatus[CINT_TUBE]*ENC_SHELLLOADED;
+		if (weaponStatus[CINT_SLING]){finalBulk *= GetCvar("hd_odr_cintiaslingbulk");}
+		return finalBulk;
+	}
+	
+	action void A_SetAltHold(bool which){
+		if(which)invoker.weaponstatus[0]|=CINTF_ALTHOLDING;
+		else invoker.weaponstatus[0]&=~CINTF_ALTHOLDING;
+	}
+	
+	action void A_Chamber(bool careful=false){
+		int chm=invoker.weaponstatus[CINT_CHAMBER];
+		invoker.weaponstatus[CINT_CHAMBER]=0;
+		if(invoker.weaponstatus[CINT_TUBE]>0){
+			invoker.weaponstatus[CINT_CHAMBER]=2;
+			invoker.weaponstatus[CINT_TUBE]--;
+		}
+		vector3 cockdir;double cp=cos(pitch);
+		if(careful)cockdir=(-cp,cp,-5);
+		else cockdir=(0,-cp*5,sin(pitch)*frandom(4,6));
+		cockdir.xy=rotatevector(cockdir.xy,angle);
+		actor fbs;bool gbg;
+		if(chm>1){
+			A_StartSound("weapons/cintiarelease", 9);
+			if(careful&&!A_JumpIfInventory("HDShellAmmo",0,"null")){
+				HDF.Give(self,"HDShellAmmo",1);
+			}else{
+				[gbg,fbs]=A_SpawnItemEx("HDFumblingShell",
+					cos(pitch)*8,0,height-8-sin(pitch)*8,
+					vel.x+cockdir.x,vel.y+cockdir.y,vel.z+cockdir.z,
+					0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+				);
+			}
+		}else if(chm>0){	
+			cockdir*=frandom(1.,1.3);
+			[gbg,fbs]=A_SpawnItemEx("HDSpentShell",
+				cos(pitch)*8,frandom(-0.1,0.1),height-8-sin(pitch)*8,
+				vel.x+cockdir.x,vel.y+cockdir.y,vel.z+cockdir.z,
+				0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+			);
+		}
+	}
+	
+	action bool A_LoadTubeFromHand(){
+		int hand=invoker.handshells;
+		if(
+			!hand
+			||(
+				invoker.weaponstatus[CINT_CHAMBER]>0
+				&&invoker.weaponstatus[CINT_TUBE]>=9
+			)
+		){
+			EmptyHand();
+			return false;
+		}
+		invoker.weaponstatus[CINT_TUBE]++;
+		invoker.handshells--;
+		A_StartSound("weapons/cintiaload",8,CHANF_OVERLAP);
+		return true;
+	}
+	
+	action bool A_GrabShells(int maxhand=3,bool settics=false,bool alwaysone=false){
+		if(maxhand>0)EmptyHand();else maxhand=abs(maxhand);
+		int toload=min(countinv("HDShellAmmo"),
+			alwaysone?1:(9-invoker.weaponstatus[CINT_TUBE]),
+			max(1,health/22),
+			maxhand
+		);
+		if(toload<1)return false;
+		invoker.handshells=toload;
+		A_TakeInventory("HDShellAmmo",toload,TIF_NOTAKEINFINITE);
+		if(settics)A_SetTics(7);
+		A_StartSound("weapons/pocket",9);
+		A_MuzzleClimb(
+			frandom(0.1,0.15),frandom(0.2,0.4),
+			frandom(0.2,0.25),frandom(0.3,0.4),
+			frandom(0.1,0.35),frandom(0.3,0.4),
+			frandom(0.1,0.15),frandom(0.2,0.4)
+		);
+		return true;
+	}
+	
+	states {
+	select0:
+		CINT A 1 A_JumpIf(invoker.weaponstatus[CINT_SLING]>0,"select0sling");
+		goto select0nosling;
+	select0nosling:
+		---- A 1 A_Raise(45);
+		---- A 1 A_Raise(45);
+		---- A 1 A_Raise(24);
+		---- A 1 A_Raise(11);
+		---- A 1 A_Raise();
+		wait;
+	select0sling:
+		---- A 1 A_Raise(60);
+		---- A 1 A_Raise(60);
+		---- A 1 A_Raise(48);
+		---- A 1 A_Raise(22);
+		---- A 1 A_Raise();
+		wait;
+	
+	
+	deselect0:
+		CINT A 1 A_JumpIf(invoker.weaponstatus[CINT_SLING]>0,"deselect0fast");
+		goto deselect0big;
+	deselect0fast:
+		---- A 1 A_Lower(0);
+		---- A 1 A_Lower(24);
+		---- A 1 A_Lower(48);
+		---- A 1 A_Lower(60);
+		wait;
+		
+	
+	ready:
+		---- A 0 A_JumpIf(pressingaltfire(),2);
+		---- A 0{
+			if(!pressingaltfire()){
+				if(!pressingfire())A_ClearRefire();
+				A_SetAltHold(false);
+			}
+		}
+		CINT A 1 A_WeaponReady(WRF_ALL);
+		goto readyend;
+		
+	readystuck:
+		---- B 0 A_JumpIf(pressingaltfire(),2);
+		---- B 0{
+			if(!pressingaltfire()){
+				if(!pressingfire())A_ClearRefire();
+				A_SetAltHold(false);
+			}
+		}
+		CINT B 1 A_WeaponReady(WRF_NOPRIMARY);
+		loop;
+	
+	fire:
+	hold:
+		---- A 0 A_JumpIf(invoker.weaponstatus[CINT_CHAMBER]==2,"shoot");
+		---- A 0 A_ClearRefire();
+		CINT A 1 A_WeaponReady(WRF_NOPRIMARY);
+		---- A 0 A_Refire();
+		goto ready;
+	shoot:
+		CINT K 1 A_FireCintia();
+		CINT LMN 1;
+		goto ready;
+	flash:
+		TNT1 A 1 bright{
+			A_Light2();
+			HDFlashAlpha(-32);
+		}
+		TNT1 A 1 A_ZoomRecoil(0.9);
+		TNT1 A 0 A_Light0();
+		TNT1 A 0 A_AlertMonsters();
+		stop;
+	
+	altfire:
+		---- A 0 A_JumpIf(invoker.weaponstatus[0]&CINTF_ALTHOLDING,"nope");
+		---- A 0 A_JumpIf(invoker.weaponstatus[0]&CINTF_JAMMED,"ohshit");
+		---- A 0 A_SetAltHold(true);
+	chamber:
+		CINT A 1 A_StartSound("weapons/cintialeverout", 8);
+		CINT BBBC 1;
+		CINT CC 1 A_MuzzleClimb(frandom(0.3,0.6),-frandom(0.2,0.4));
+		goto endchamber;
+	endchamber:
+		---- C 0 A_JumpIf(GetCvar("hd_odr_cintiaeasylever"),"althold");
+		---- C 0 A_Refire();
+		---- C 0 {
+			A_StartSound("weapons/rifleclick", 8);
+			invoker.weaponStatus[0] |= CINTF_JAMMED;
+		}
+		goto readystuck;
+		
+	althold:
+		---- C 0 {
+			A_MuzzleClimb(frandom(0.3,0.6),-frandom(0.2,0.4));
+			invoker.weaponStatus[0] &= ~CINTF_JAMMED;
+		}
+		---- C 0 A_Chamber();
+	holdlever:
+		CINT C 1;
+		---- C 0 A_Refire("holdlever");
+		goto longstroke;
+		
+	ohshit:
+		---- C 0 A_StartSound("weapons/rifleclick", 8);
+		CINT CD 1 {
+			A_MuzzleClimb(frandom(-3.0,3.0),frandom(-4.0,2.5));
+			if (!random(0,6)) {
+				SetWeaponState("althold");
+			}
+		}
+		CINT C 1 {A_SetTics(random(2,5));}
+		---- C 0 A_Refire("ohshit");
+		goto readystuck;
+		
+	longstroke:
+		CINT BB 1 A_MuzzleClimb(-frandom(0.3,0.6),frandom(0.2,0.4));
+		CINT J 1 A_StartSound("weapons/cintialeverin", 8);
+		CINT J 1 A_MuzzleClimb(-frandom(0.3,0.6),frandom(0.2,0.4));
+		goto ready;
+		
+	reload:
+		CINT A 1 A_JumpIf(!CountInv("HDShellAmmo"), "nope");
+	startreload:
+		CINT NOPQRSTUVW 1;
+	reloadgrabshells:
+		CINT W 4 A_GrabShells(3, false);
+		CINT W 6 A_JumpIf(health>40,1);
+		CINT W 4 A_StartSound("weapons/pocket",9);
+		CINT W 8 A_StartSound("weapons/pocket",9);
+		CINT W 6 A_StartSound("weapons/pocket",9);
+		CINT W 6;
+		goto reloadaddshells;
+	reloadaddshells:
+		CINT W 2;
+		CINT W 4 A_LoadTubeFromHand();
+		CINT WWWWWW 1 {
+			if(
+				PressingReload()
+				||PressingAltReload()
+				||PressingUnload()
+				||PressingFire()
+				||PressingAltfire()
+				||PressingZoom()
+				||PressingFiremode()
+			)invoker.weaponstatus[0]|=CINTF_HOLDING;
+			else invoker.weaponstatus[0]&=~CINTF_HOLDING;
+
+			if(
+				invoker.weaponstatus[CINT_TUBE]>=9
+				||(
+					invoker.handshells<1&&(
+						invoker.weaponstatus[0]&HUNTF_FROMPOCKETS
+					)&&
+					!countinv("HDShellAmmo")
+				)
+			)setweaponstate("reloadend");
+			else if(!pressingreload()) {setweaponstate("reloadend");}
+			else if(invoker.handshells<1)setweaponstate("reloadgrabshells");
+		}goto reloadaddshells;
+	reloadend:
+		CINT WVUTSRQPONA 1;
+		---- A 0 A_JumpIf(invoker.handshells > 0, "putitback");
+		goto ready;
+		
+	putitback:
+			CINT A 4 A_StartSound("weapons/pocket",9);
+			---- A 0 {
+				A_GiveInventory("HDShellAmmo", invoker.handshells);
+				invoker.handshells = 0;
+			}
+			goto ready;
+	
+	unload:
+		CINT ANOPQRSTUVW 1;
+	unloadchamber:
+		CINT W 4 A_StartSound("weapons/cintialeverout", 8);
+		CINT W 8 {
+			if (invoker.weaponStatus[CINT_CHAMBER] == 2) {
+				HDF.Give(self,"HDShellAmmo",1);
+				A_StartSound("weapons/pocket",9);
+				A_SetTics(5);
+			}
+			invoker.weaponStatus[CINT_CHAMBER] = 0;
+		}
+		CINT W 4 A_StartSound("weapons/cintialeverin", 8);
+	unloadtube:
+		CINT W 8 {
+			if(invoker.weaponstatus[CINT_TUBE]<1)setweaponstate("reloadend");
+			else if(invoker.handshells>=3)setweaponstate("unloadtubeend");
+			else{
+				invoker.handshells++;
+				invoker.weaponstatus[CINT_TUBE]--;
+			}
+		}
+		CINT W 4 offset(0,40) A_StartSound("weapons/cintiaload",8);
+		loop;
+	unloadtubeend:
+		CINT W 6;
+		CINT W 3 {
+			int rmm=HDPickup.MaxGive(self,"HDShellAmmo",ENC_SHELL);
+			if(rmm>0){
+				A_StartSound("weapons/pocket",9);
+				A_SetTics(8);
+				HDF.Give(self,"HDShellAmmo",min(rmm,invoker.handshells));
+				invoker.handshells=max(invoker.handshells-rmm,0);
+			}
+		}
+		CINT W 0 EmptyHand(careful:true);
+		CINT W 6 A_Jumpif(!pressingunload(),"reloadend");
+		goto unloadtube;
+	
+	spawn:
+		CNPU AB -1 nodelay {
+			if (invoker.weaponstatus[CINT_SLING]) {frame = 1;}
+			else {frame = 0;}
+		}
+	}
+}
+
+enum cintiaStats {
+	CINTF_JAMMED = 1,
+	CINTF_UNLOADONLY = 2,
+	CINTF_ALTHOLDING = 4,
+	CINTF_HOLDING = 8,
+
+	CINT_SLING = 1,
+	CINT_CHOKE = 2,
+	//3 is reserved for side saddles, if I ever make a version with them
+	CINT_TUBE = 4,
+	CINT_CHAMBER = 5,
+}
+
+class HDCintiaRandom : IdleDummy {
+	states {
+		spawn:
+			TNT1 A 0 nodelay {
+				let wpn = HDCintia(Spawn("HDCintia", pos, ALLOW_REPLACE));
+				HDF.TransferSpecials(self,wpn,HDF.TS_ALL);
+				wpn.vel = vel;
+				if (random(0, 99) < hd_odr_cintiaslingchance){
+					wpn.weaponStatus[CINT_SLING] = true;
+				}
+				if (random(0, 99) < hd_odr_cintiachokechance){
+					wpn.weaponStatus[CINT_CHOKE] = random(0, 7);
+				}
+			}
+			stop;
+	}
+}

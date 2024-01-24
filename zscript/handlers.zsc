@@ -1,0 +1,170 @@
+class DeadRingerAmmoHandler : EventHandler {
+	override void PlayerSpawned(PlayerEvent e) {
+		PlayerInfo player = players[e.PlayerNumber];
+		if (player.mo 
+		    && player.mo.countInv("HDBoomerangAmmo") 
+			&& !player.mo.countInv("HDBoomerangThrower")) {
+			player.mo.giveInventory("HDBoomerangThrower", 1);
+		}
+	}
+
+	override void WorldThingSpawned(WorldEvent e) {
+		if (!e.thing) {return;}
+		let ammoType = HDAmmo(e.thing);
+		// Ammo should be assigned properly
+		if (ammoType) {
+			switch (ammoType.GetClassName()) {
+				case 'HD500SWLightAmmo':
+					ammoType.itemsThatUseThis.Push("HDThunderhawk");
+				case 'HD500SWHeavyAmmo':
+					ammoType.itemsThatUseThis.Push("HDThunderhawk");
+				case 'HDShellAmmo':
+					ammoType.itemsThatUseThis.Push("HDCintia");
+					ammoType.itemsThatUseThis.Push("HDMontaraz");
+				case 'HD45ACPAmmo':
+					ammoType.itemsThatUseThis.Push("HDGrasa");
+				default:
+					break;
+			}
+		}
+	}
+}
+
+class DeadRingerReplaceHandler : EventHandler {
+	static const string replacements[] = {
+		"HDThunderhawkRandom",
+		"HDCintiaRandom",
+		"HDMontarazRandom",
+		"HDGrasaSpawner",
+		"HDFragGrenadePickup",
+		"HDAnthrakia",
+		"HDBasilissaMask",
+		"HDBoomerangAmmo",
+		"HDHekiSpawner"
+	};
+
+	bool GetChance(int chance){
+		return (random(0, 99) < chance);
+	}
+	
+	Actor DeadRingerReplace(Actor replaceMe, string newType) {
+		if (replaceMe is "Inventory" && Inventory(replaceMe).owner) {return null;}
+		bool spawned;
+		Actor newActor;
+		[spawned, newActor] = replaceMe.A_SpawnItemEX(newType, flags:SXF_NOCHECKPOSITION);
+		if (spawned && !(replaceMe.bDESTROYED)) {replaceMe.Destroy();}
+		return newActor;
+	}
+	
+	override void WorldTick() {
+		if (level.mapTime > 1 && !bDESTROYED) {
+			Destroy();
+		}
+	}
+	
+	override void WorldThingSpawned(WorldEvent e) {
+		if (!e.thing) {return;}
+		let inv = Inventory(e.thing);
+		if (inv && inv.owner) {return;}
+		switch (e.thing.GetClassName()) {
+			case 'HDPistol':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_pistolreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_pistolreplace-1]);
+				}
+				break;
+			case 'DeinoSpawn':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_revolverreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_revolverreplace-1]);
+				}
+				break;
+			case 'Hunter':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_shotgunreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_shotgunreplace-1]);
+				}
+				break;
+			case 'Slayer':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_ssgreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_ssgreplace-1]);
+				}
+				break;
+			case 'HDSMGRandom':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_smgreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_smgreplace-1]);
+				}
+				break;
+			case 'ZM66Random':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_assaultriflereplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_assaultriflereplace-1]);
+				}
+				break;
+			case 'Vulcanette':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_chaingunreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_chaingunreplace-1]);
+				}
+				break;
+			case 'BloopMapPickup':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_grenadelauncherreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_grenadelauncherreplace-1]);
+				}
+				break;
+			case 'HDRL':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_rocketlauncherreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_rocketlauncherreplace-1]);
+				}
+				break;
+			case 'LiberatorRandom':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_liberatorreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_liberatorreplace-1]);
+				}
+				break;
+			case 'ThunderBuster':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_thunderbusterreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_thunderbusterreplace-1]);
+				}
+				break;
+			case 'BossRifleSpawner':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_sniperreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_sniperreplace-1]);
+				}
+				break;
+			case 'Brontornis':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_brontoreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_brontoreplace-1]);
+				}
+				break;
+			case 'Lumberjack':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_chainsawreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_chainsawreplace-1]);
+				}
+				break;
+			case 'BFG9K':
+				if (GetChance(hd_odr_weaponfrequency) && hd_odr_bfgreplace>0) {
+					DeadRingerReplace(e.thing, replacements[hd_odr_bfgreplace-1]);
+				}
+				break;
+			case 'ZombieAutoStormtrooper':
+			case 'ZombieSemiStormtrooper':
+			case 'ZombieSMGStormtrooper':
+				if (GetChance(hd_odr_zombiegrasa)) {
+					DeadRingerReplace(e.thing, "ZombieGrasaStormtrooper");
+				}
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+class DeadRingerDropHandler : EventHandler {
+
+	override void WorldThingDied(WorldEvent e) {
+		if (!e.thing) {return;}
+		switch (e.thing.GetClassName()) {
+			case 'Ardentipede':
+				e.thing.A_SpawnItemEX("ODRRandomScroll", flags:SXF_NOCHECKPOSITION);
+				break;
+			default:
+				break;
+		}
+	}
+}

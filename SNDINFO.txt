@@ -1,0 +1,97 @@
+weapons/thcock        RCTHCOCK
+weapons/thcock2       RCTHCOK2
+weapons/thopen        RCTHOPEN
+weapons/thclose       RCTHCLOS
+weapons/thload        RCTHLOAD
+weapons/thtrigger     RCTHTRIG
+$random weapons/thfire {thfire1 thfire2 thfire3}
+$volume weapons/thfire 0.8
+thfire1               RCTHFIR1
+thfire2               RCTHFIR2
+thfire3               RCTHFIR3
+
+weapons/cintiafire     CINTFIRE
+$volume weapons/cintiafire 0.8
+weapons/cintialeverout CINTOPEN
+weapons/cintialeverin  CINTCLOS
+weapons/cintiarelease  MNTZSHEL
+weapons/cintiaclick    CINTCLIK
+$random weapons/cintiaload     {cintiashell1 cintiashell2 cintiashell3 cintiashell4 cintiashell5 cintiashell6 cintiashell7 cintiashell8}
+cintiashell1           CINTLOD1
+cintiashell2           CINTLOD2
+cintiashell3           CINTLOD3
+cintiashell4           CINTLOD4
+cintiashell5           CINTLOD5
+cintiashell6           CINTLOD6
+cintiashell7           CINTLOD7
+cintiashell8           CINTLOD8
+
+weapons/montarazfire1  MNTZFIR1
+$volume weapons/montarazfire1 0.8
+weapons/montarazfire2  MNTZFIR2
+$volume weapons/montarazfire2 0.8
+weapons/montarazopen   MNTZOPEN
+weapons/montarazclose  MNTZCLOS
+weapons/montarazload1  MNTZPLAS
+weapons/montarazload2  MNTZSHEL
+weapons/montarazfail   MNTZNOPE
+
+weapons/grasaunload    GRASULOD
+weapons/grasaload      GRASLOAD
+weapons/grasaclosebolt GRASLOD1
+weapons/grasaopenbolt  GRASULO1
+weapons/grasafail      GRASFAIL
+$random weapons/grasafire {grasfir1 grasfir2}
+$volume weapons/grasafire 0.7
+grasfir1               GRASFIRE
+grasfir2               GRASFIR1
+
+weapons/anthrune         ANTKPULS
+weapons/anthrstart       ANTKSTRT
+$volume weapons/anthrstart 0.6
+weapons/anthraltstart       ANTKSTR2
+$volume weapons/anthraltstart 0.6
+weapons/anthrloop        ANTKSPEW
+$volume weapons/anthrloop 0.5
+weapons/anthrstop        ANTKSTOP
+$volume weapons/anthrstop 0.5
+weapons/anthraltloop        ANTKSPW2
+$volume weapons/anthraltloop 0.5
+weapons/anthraltstop        ANTKSTO2
+$volume weapons/anthraltstop 0.5
+weapons/anthrfireball    ANTKGOUT
+
+weapons/anthrwindloop    ANTKWIND
+
+weapons/hekidraw        HEKIFLEX
+weapons/hekifire        HEKIFIRE
+weapons/hekiload        HEKILOAD
+weapons/hekiundraw      HEKIDOWN
+$random weapons/arrowhit {arrowmeat1 arrowmeat2 arrowmeat3}
+arrowmeat1              ARROHIT1
+arrowmeat2              ARROHIT2
+arrowmeat3              ARROHIT3
+weapons/arrowmiss       ARROWMIS
+
+weapons/boomerangthrow  NMRDTHRW
+weapons/boomerangfly    NMRDFLY
+weapons/boomerangslam   NMRDBONC
+
+weapons/basilcrackle    BSLSAMB1
+$volume weapons/basilcrackle 0.4
+weapons/basilominous    BSLSAMB2
+weapons/basillaugh      BSLSLAUG
+weapons/basilcharge     BSLCHARG
+weapons/basilcharge2    BSLSGET2
+$volume weapons/basilcharge2 0.4
+weapons/basilthrow      BSLLANCH
+weapons/basilboom       BSLSHIT
+weapons/basilboom2		BSLSHITA
+weapons/basilboomfar	BSLSHITF
+$volume weapons/basilboomfar 0.3
+weapons/basilcast       BSLSSHIN
+weapons/basilunseal1    BSLSREAD
+weapons/basilunseal2    BSLSSEAL
+weapons/basilunseal3    BSLSSUMN
+
+misc/souldrainambience	SPRTLOOP

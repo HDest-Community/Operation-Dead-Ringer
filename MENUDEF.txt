@@ -1,0 +1,103 @@
+AddOptionMenu "OptionsMenu" {
+	Submenu "Operation: Dead Ringer Options", "DeadRingerOptions"
+}
+
+AddOptionMenu "HDOptionsMenu" {
+	StaticText " "
+	Submenu "Operation: Dead Ringer Options", "DeadRingerOptions"
+}
+
+OptionMenu "DeadRingerOptions" {
+	Title "Operation Dead Ringer Options"
+	StaticText " "
+	Slider "HDest Weapon Replacement Chance", "hd_odr_weaponfrequency", 0, 100, 5, 0
+	Option "Replace Chainsaw With...", "hd_odr_chainsawreplace", "WeaponReplaceOption"
+	Option "Replace Pistol With...", "hd_odr_pistolreplace", "WeaponReplaceOption"
+	Option "Replace Revolver With...", "hd_odr_revolverreplace", "WeaponReplaceOption"
+	Option "Replace SMG With...", "hd_odr_smgreplace", "WeaponReplaceOption"
+	Option "Replace Shotgun With...", "hd_odr_shotgunreplace", "WeaponReplaceOption"
+	Option "Replace Super Shotgun With...", "hd_odr_ssgreplace", "WeaponReplaceOption"
+	Option "Replace ZM66 With...", "hd_odr_assaultriflereplace", "WeaponReplaceOption"
+	Option "Replace Chaingun With...", "hd_odr_chaingunreplace", "WeaponReplaceOption"
+	Option "Replace Grenade Launcher With...", "hd_odr_grenadelauncherreplace", "WeaponReplaceOption"
+	Option "Replace Rocket Launcher With...", "hd_odr_rocketlauncherreplace", "WeaponReplaceOption"
+	Option "Replace Liberator With...", "hd_odr_liberatorreplace", "WeaponReplaceOption"
+	Option "Replace Thunderbuster With...", "hd_odr_thunderbusterreplace", "WeaponReplaceOption"
+	Option "Replace BFG With...", "hd_odr_bfgreplace", "WeaponReplaceOption"
+	Option "Replace BOSS With...", "hd_odr_sniperreplace", "WeaponReplaceOption"
+	Option "Replace Brontoris with...", "hd_odr_brontoreplace", "WeaponReplaceOption"
+	SafeCommand "Reset Weapon Spawns", "hd_odr_resetweapons", "Weapon settings will be reverted to default. Are you sure?"
+	StaticText " "
+	//Slider "HDest Item Replacement Chance", "hd_odr_itemfrequency", 0, 100, 5, 0
+	//StaticText " "
+	Slider "Stormtroopers Wield Grasa M-12s", "hd_odr_zombiegrasa", 0, 100, 5, 0
+	//Slider "All Zombie-type enemies drop Grasa M-12s", "hd_odr_grasadropchance", 0, 100, 5, 0
+	SafeCommand "Reset Enemy Settings", "hd_odr_resetenemies", "Enemy settings will be reverted to default. Are you sure?"
+	StaticText " "
+	Slider "Chance to find Dual-Action Thunderhawk", "hd_odr_thdualaction", 0, 100, 5, 0
+	Option "Thunderhawk Recoil Hurts User", "hd_odr_threcoildamage", "OnOff"
+	Option "Autofire Thunderhawk", "hd_odr_thautofire", "OnOff"
+	SafeCommand "Reset Thunderhawk Settings", "hd_odr_resetthunderhawk", "Custom settings for the R&C Thunderhawk will be reset. Are you sure?"
+	StaticText " "
+	Slider "Chance to find Cintia with Sling", "hd_odr_cintiaslingchance", 0, 100, 5, 0
+	Slider "Chance to find Cintia with Choked Barrel", "hd_odr_cintiachokechance", 0, 100, 5, 0
+	Slider "Sling Cintia Bulk Multiplier", "hd_odr_cintiaslingbulk", 0.25, 1.0, 0.05, 2
+	Option "Auto-Complete Cintia Lever Strokes", "hd_odr_cintiaeasylever", "OnOff"
+	SafeCommand "Reset Cintia Settings", "hd_odr_resetcintia", "Custom settings for the Cintia 1901 will be reset. Are you sure?"
+	StaticText " "
+	Slider "Chance to find Montaraz with Choked Barrel", "hd_odr_montarazchokechance", 0, 100, 5, 0
+	Option "Overloaded Montaraz Penalty", "hd_odr_montoverload", "MontarazBehaviorOption"
+	Option "Always Reload both barrels", "hd_odr_montloadsboth", "OnOff"
+	Option "Overload does not require holding Reload", "hd_odr_monteasyoverload", "OnOff"
+	SafeCommand "Reset Montaraz Settings", "hd_odr_resetmontaraz", "Custom settings for the Montaraz 1899 will be reset. Are you sure?"
+	StaticText " "
+	Slider "Chance to find Grasa with Hacked RoF", "hd_odr_grasahackchance", 0, 100, 5, 0
+	Slider "Chance to find Grasa with High-Quality Bolt", "hd_odr_grasaqualitychance", 0, 100, 5, 0
+	Slider "Grasa Ammo Feed Wear Multiplier", "hd_odr_grasafeedrate", 0, 4.0, 0.1, 2
+	Slider "Grasa Bolt Wear Multiplier", "hd_odr_grasaboltrate", 0, 4.0, 0.05, 2
+	Slider "Grasa Repair Speed Multiplier", "hd_odr_grasarepairrate", 0, 4.0, 0.1, 2 
+	SafeCommand "Reset Grasa Settings", "hd_odr_resetgrasa", "Custom settings for the Grasa M-12 will be reset. Are you sure?"
+	StaticText " "
+	Option "Anthrakia Starts With...", "hd_odr_anthrakiaspellsknown", "AnthrakiaSpellsOption"
+	Slider "Anthrakia Frag Leakage Rate", "hd_odr_anthrakiafragleak", 0, 4.0, 0.1, 2
+	Slider "Anthrakia Soul Drain Rate", "hd_odr_anthrakiasouldrain", 0, 4.0, 0.1, 2
+	SafeCommand "Reset Anthrakia Settings", "hd_odr_resetanthrakia", "Custom settings for the Gate of Anthrakia will be reset. Are you sure?"
+	StaticText " "
+	Slider "Basilissa Soul Drain Rate", "hd_odr_basilissasouldrain", 0, 4.0, 0.1, 2
+	SafeCommand "Reset Basilissa Settings", "hd_odr_resetbasilissa", "Custom settings for the Mask of Basilissa will be reset. Are you sure?"
+	StaticText " "
+	Slider "Heki Shot Speed Multiplier", "hd_odr_hekishotspeed", 0, 4.0, 0.1, 2
+	SafeCommand "Reset Heki Settings", "hd_odr_resetheki", "Custom settings for the 'Heki' Hunting Bow will be reset. Are you sure?"
+	StaticText " "
+	Slider "Nimurdal Throw Speed Multiplier", "hd_odr_nimurdalthrowspeed", 0, 4.0, 0.1 , 2
+	SafeCommand "Reset Nimurdal Settings", "hd_odr_resetnimurdal", "Custom settings for the 'Nimurdal' Boomerang will be reset. Are you sure?"
+}
+
+OptionValue WeaponReplaceOption {
+	0, "None"
+	1, "R&C Thunderhawk"
+	2, "Cintia 1901"
+	3, "Montaraz 1899"
+	4, "Grasa M-12 Submachine Gun"
+	5, "Fragmentation Grenades"
+	6, "Gate of Anthrakia"
+	7, "Mask of Basilissa"
+	8, "Nimurdal (Boomerang)"
+	9, "Heki (Hunting Bow)"
+}
+
+OptionValue MontarazBehaviorOption {
+	0, "No Penalty"
+	1, "Gun Explodes (Default)"
+	2, "Gun Breaks"
+	3, "Knockback + Damage User"
+	4, "Knockback User"
+	5, "Drop Gun"
+}
+
+OptionValue AnthrakiaSpellsOption {
+	0, "None"
+	1, "Only Fire Spells (Default)"
+	2, "Random Spells"
+	3, "All Spells"
+}

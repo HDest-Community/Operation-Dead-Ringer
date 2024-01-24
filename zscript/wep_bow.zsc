@@ -1,0 +1,336 @@
+/**
+==== 'HEKI' HUNTING BOW ====
+- Loadout Code: hki
+- Ammo Type: Broadhead Arrows
+- Modifiers: None
+
+You might think bringing a bow to a gun fight might not be the best idea. 
+Indeed, an arrow drawn and fired by a string doesn't have nearly as much 
+stopping power as a bullet fired with gunpowder. But what arrows lack in direct 
+stopping power, they make up for in utility. Heavy, sharp steel broadheads can 
+punch through armor and bite into shields, and the wide heads leave nasty wounds 
+on impact; one or two good shots, and your victim will drop dead from blood loss
+in a matter of seconds.
+**/
+
+class HDHeki : HDWeapon {
+	default {
+		//$Category "Weapons/Operation: Dead Ringer"
+		//$Title "'Heki' hunting bow"
+		//$Sprite "HEKIZ0"
+		+weapon.noalert 
+		weapon.selectionorder 82;
+		weapon.slotnumber 8;
+		weapon.slotpriority 2;
+		inventory.pickupmessage "$PICKUP_HEKI";
+		obituary "$OBIT_HEKI";
+		weapon.bobrangex 0.35;
+		weapon.bobrangey 0.7;
+		scale 0.6;
+		hdweapon.barrelsize 3,0.5,1;
+		tag "$TAG_HEKI";
+		hdweapon.refid "hki";
+	}
+	
+	override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
+	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
+	
+	override string pickupmessage() {
+		return StringTable.Localize(super.pickupmessage());
+	}
+	
+	override double gunmass() {
+		double blk = 6;
+		if (weaponStatus[HEKI_NOCK]) {blk += 1;}
+		return blk;
+	}
+	
+	override double weaponbulk() {
+		double blk = 45;
+		if (weaponStatus[HEKI_NOCK]) {blk += 3;}
+		return blk;
+	}
+	
+	override Inventory CreateTossable(int amt){
+		if (weaponStatus[HEKI_NOCK]) {
+			weaponStatus[HEKI_NOCK] = false;
+			owner.A_GiveInventory("HDArrowAmmo", 1);
+			owner.A_DropInventory("HDArrowAmmo",1);
+		}
+		return super.CreateTossable();
+	}
+	
+	override void DropOneAmmo(int amt){
+		if(owner){
+			amt=clamp(amt,1,10);
+			owner.A_DropInventory("HDArrowAmmo",1);
+		}
+	}
+	
+	override void ForceBasicAmmo(){
+		owner.A_SetInventory("HDArrowAmmo",1);
+	}
+	
+	override void InitializeWepStats() {
+		weaponStatus[HEKI_FORCE] = 0;
+		weaponStatus[HEKI_NOCK] = false;
+	}
+	
+	override string gethelptext(){
+		return
+		WEPHELP_FIRE.."  Draw String (Release to fire)\n"
+		.."  "..WEPHELP_ALTFIRE.."  Cancel Shot\n"
+		..WEPHELP_RELOAD.."  Nock Arrow\n"
+		..WEPHELP_UNLOAD.."  Remove Arrow\n"
+		;
+	}
+	
+	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
+		if(sb.hudlevel==1){
+			sb.drawimage("ARROA3A7",(-52,-8),sb.DI_SCREEN_CENTER_BOTTOM,scale:(0.6,0.6)
+			);
+			sb.drawnum(hpl.countinv("HDArrowAmmo"),-45,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+		}
+		sb.drawwepnum(
+			hpl.countinv("HDArrowAmmo"),(HDCONST_MAXPOCKETSPACE/3));
+		sb.drawwepnum(hdw.weaponstatus[HEKI_FORCE],20,posy:-10,alwaysprecise:true);
+	}
+	
+	action void A_ChargeBow() {
+		let hdp = HDPlayerPawn(self);
+		invoker.weaponStatus[HEKI_FORCE]++;
+		if (hdp && invoker.weaponStatus[HEKI_FORCE] > 50 && !(invoker.weaponStatus[HEKI_FORCE] % 10)) {
+			hdp.fatigue++;
+			if (hdp.fatigue > 25 && !(invoker.weaponStatus[HEKI_FORCE] % 50)) {
+				A_StartSound(painsound,CHAN_VOICE);
+				SetWeaponState("nevermind");
+			}
+		}
+		if (PressingAltFire()) {SetWeaponState("nevermind");}
+	}
+	
+	states {
+		spawn:
+			HEKI Z -1;
+			stop;
+			
+		select0:
+			HEKI I 0 A_JumpIf(invoker.weaponStatus[HEKI_NOCK], "select0nock");
+			goto select0small;
+		select0nock:
+			HEKI A 0;
+			goto select0small;
+		
+		deselect0:
+			HEKI I 0 A_JumpIf(invoker.weaponStatus[HEKI_NOCK], "deselect0nock");
+			goto deselect0small;
+		deselect0nock:
+			HEKI A 0;
+			goto deselect0small;
+			
+		ready:
+			---- I 0 A_JumpIf(invoker.weaponStatus[HEKI_NOCK], "readyarrow");
+			HEKI I 1 A_WeaponReady(WRF_NOFIRE | WRF_ALLOWRELOAD);
+			loop;
+		readyarrow:
+			HEKI A 1 A_WeaponReady(WRF_ALLOWUSER4);
+			---- A 0 A_JumpIf(!invoker.weaponStatus[HEKI_NOCK], "ready");
+			loop;
+			
+		fire:
+			---- B 0 A_StartSound("weapons/hekidraw", CHAN_WEAPON, CHANF_OVERLAP);
+			HEKI BCDE 1;
+		hold:
+			HEKI E 1 A_ChargeBow();
+			---- E 0 A_WeaponReady(WRF_NOFIRE);
+			---- E 0 A_Refire();
+			goto shoot;
+		shoot:
+			HEKI I 1 {
+				double shotFactor = min(10.0, invoker.weaponStatus[HEKI_FORCE]/2.0);
+				shotFactor *= hd_odr_hekishotspeed;
+				HDBulletActor.FireBullet(self, "HDFlyingArrow", speedFactor:shotFactor);
+				A_StartSound("weapons/hekifire", CHAN_WEAPON, CHANF_OVERLAP);
+				invoker.weaponStatus[HEKI_NOCK] = false;
+				invoker.weaponStatus[HEKI_FORCE] = 0;
+			}
+			goto ready;
+		nevermind:
+			---- E 0 {invoker.weaponStatus[HEKI_FORCE] = 0;}
+			---- E 0 A_StartSound("weapons/hekiundraw", CHAN_WEAPON, CHANF_OVERLAP);
+			HEKI EDCB 1;
+			goto nope;
+		nofire:
+			---- B 1;
+			---- B 0 A_Refire("nofire");
+			goto nope;
+		
+		reload:
+			---- J 0 A_JumpIf(!CountInv("HDArrowAmmo"), "nope");
+			---- J 0 A_StartSound("weapons/hekiload", CHAN_WEAPON, CHANF_OVERLAP);
+			HEKI JKLMNOP 2;
+			---- P 0 {
+				invoker.weaponStatus[HEKI_NOCK] = true;
+				TakeInventory("HDArrowAmmo", 1);
+				}
+			goto readyarrow;
+		
+		unload:
+			---- P 0 A_StartSound("weapons/hekiload", CHAN_WEAPON, CHANF_OVERLAP);
+			HEKI PONMLKJ 2;
+			---- J 0 {
+				invoker.weaponStatus[HEKI_NOCK] = false;
+				GiveInventory("HDArrowAmmo", 1);
+			}
+			goto nope;
+	}
+}
+
+class HDFlyingArrow : HDBulletActor {
+	default {
+		pushfactor 0.4;
+		mass 300;
+		speed HDCONST_MPSTODUPT*10;
+		accuracy 800;
+		stamina 1905;
+		woundhealth 2;
+		hdbulletactor.hardness 4;
+		hdbulletactor.distantsound "";
+	}
+	
+	override void gunsmoke(){}
+	
+	override void HitGeometry(line hitline, sector hitsector, int hitside,
+		int hitpart, vector3 vu, double lastdist){
+		Actor drop;
+		setorigin(pos-vu,false);
+		if (hitline) {
+			drop = Spawn("HDArrowWall", pos, ALLOW_REPLACE);
+		} else if (hitsector) {
+			switch (hitpart) {
+				case SECPART_Ceiling:
+					drop = Spawn("HDArrowCeiling", pos, ALLOW_REPLACE);
+					break;
+				case SECPART_Floor:
+					drop = Spawn("HDArrowFloor", pos, ALLOW_REPLACE);
+					break;
+				default:
+					break;
+			}
+		}
+		if (drop) {drop.angle = self.angle;}
+		BulletDie();
+	}
+	
+	states {
+		spawn:
+			ARRO A 1 {speed = vel.Length();}
+			loop;
+	}
+}
+
+enum HekiStats {
+	HEKI_FORCE = 1,
+	HEKI_NOCK = 2,
+}
+
+class HDArrowAmmo : HDRoundAmmo {
+	default {
+		+forcexybillboard +cannotpush
+		+inventory.ignoreskill
+		+hdpickup.multipickup 
+		inventory.pickupmessage "$PICKUP_ARROW";
+		tag "Arrow";
+		scale 0.6;
+		hdpickup.bulk 3;
+		hdpickup.refid "arw";
+		inventory.icon "ARROA3A7";
+	}
+	
+	override string pickupmessage() {
+		return StringTable.Localize(super.pickupmessage());
+	}
+	
+	override void GetItemsThatUseThis() {
+		itemsThatUseThis.push("HDHeki");
+	}
+	
+	states {
+		spawn:
+			ARRO A -1;
+			stop;
+	}
+}
+
+class HDArrowWall : HDUPK {
+	default {
+		+NOGRAVITY
+		scale 0.6;
+		hdupk.amount 1;
+		hdupk.pickupsound "weapons/pocket";
+		hdupk.pickupmessage "$PICKUP_ARROW";
+		hdupk.pickuptype "HDArrowAmmo";
+	}
+	
+	override void PostBeginPlay() {
+		pickupmessage = StringTable.Localize(pickupmessage);
+		super.PostBeginPlay();
+	}
+	
+	states {
+		spawn:
+			ARRO B -1;
+			stop;
+	}
+}
+
+class HDArrowFloor : HDArrowWall {
+	states {
+		spawn:
+			ARRO C -1;
+			stop;
+	}
+}
+
+class HDArrowCeiling : HDArrowWall {
+	states {
+		spawn:
+			ARRO D -1;
+			stop;
+	}
+}
+
+class HDArrowBundle : HDUPK {
+	default {
+		scale 0.6;
+		hdupk.amount 20;
+		hdupk.pickupsound "weapons/pocket";
+		hdupk.pickupmessage "$PICKUP_ARROWBUNDLE";
+		hdupk.pickuptype "HDArrowAmmo";
+	}
+	
+	override void PostBeginPlay() {
+		pickupmessage = StringTable.Localize(pickupmessage);
+		super.PostBeginPlay();
+	}
+	
+	states {
+		spawn:
+			ARRO Z -1;
+			stop;
+	}
+}
+
+class HDHekiSpawner : IdleDummy {
+	states {
+		spawn:
+			TNT1 A 0 nodelay {
+				let wpn = HDHeki(Spawn("HDHeki", pos, ALLOW_REPLACE));
+				HDF.TransferSpecials(self,wpn,HDF.TS_ALL);
+				wpn.vel = vel;
+				A_SpawnItemEx("HDArrowBundle",-10,0,0,0,0,0,0,SXF_NOCHECKPOSITION);
+				A_SpawnItemEx("HDArrowBundle",10,0,0,0,0,0,0,SXF_NOCHECKPOSITION);
+			}
+			stop;
+	}
+}

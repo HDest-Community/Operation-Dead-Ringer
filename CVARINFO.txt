@@ -1,0 +1,108 @@
+// Percentage chance to replace base weapons with their Dead Ringer counterparts.
+server int hd_odr_weaponfrequency = 30;
+
+// Choose which weapon or item each HDest weapon will be replaced with.
+server int hd_odr_chainsawreplace = 8;
+server int hd_odr_pistolreplace = 1;
+server int hd_odr_revolverreplace = 1;
+server int hd_odr_smgreplace = 4;
+server int hd_odr_shotgunreplace = 2;
+server int hd_odr_ssgreplace = 3;
+server int hd_odr_assaultriflereplace = 4;
+server int hd_odr_chaingunreplace = 4;
+server int hd_odr_grenadelauncherreplace = 5;
+server int hd_odr_rocketlauncherreplace = 5;
+server int hd_odr_thunderbusterreplace = 6;
+server int hd_odr_bfgreplace = 7;
+server int hd_odr_liberatorreplace = 4;
+server int hd_odr_sniperreplace = 9;
+server int hd_odr_brontoreplace = 6;
+
+// Percentage chance to replace base items with their Dead Ringer counterparts.
+server int hd_odr_itemfrequency = 30;
+
+// Percentage chance to replace zombies with their Dead Ringer counterparts.
+server int hd_odr_zombiegrasa = 30;
+
+// Percentage chance zombies will drop a Grasa in addition to their normal
+// weapon drops.
+server int hd_odr_grasadropchance = 5;
+
+// ==== THUNDERHAWK ====
+// Percentage chance that the Thunderhawk will spawn as a double-action.
+server int hd_odr_thdualaction = 10;
+
+// Enables recoil damage from firing the Thunderhawk quickly.
+server bool hd_odr_threcoildamage = true;
+
+// Enables auto-fire on the Thunderhawk. Hurt your virtual wrists, not your
+// physical ones!
+user bool hd_odr_thautofire = false;
+
+// ==== CINTIA 1901 ====
+// Percentage chance that a Cintia will spawn with a sling.
+server int hd_odr_cintiaslingchance = 10;
+
+// Percentage chance that a Cintia will spawn with a choked barrel.
+server int hd_odr_cintiachokechance = 15;
+
+// Bulk multiplier for a Cintia with a sling.
+server float hd_odr_cintiaslingbulk = 0.75;
+
+// Prevents the lever from locking up if you don't hold down the button.
+user bool hd_odr_cintiaeasylever = false;
+
+// ==== MONTARAZ 1899 ====
+// Percentage chance that a Montaraz will spawn with choked barrels.
+server int hd_odr_montarazchokechance = 15;
+
+// Determines the side-effects for overloading the Montaraz 1899.
+server int hd_odr_montoverload = 1;
+
+// Pressing Reload or AltReload always loads both barrels.
+user bool hd_odr_montloadsboth = false;
+
+// If True, overloading the Montaraz won't be cancelled by releasing the
+// Reload button mid-animation.
+user bool hd_odr_monteasyoverload = false;
+
+// ==== GRASA M-12 ====
+// Percentage chance that a Grasa will spawn with a hacked bolt.
+server int hd_odr_grasahackchance = 10;
+
+// Percentage chance that a Grasa will spawn with an improved bolt construction.
+server int hd_odr_grasaqualitychance = 10;
+
+// Multiplier to how quickly the Grasa's feed degrades. Higher number means
+// more failure-to-feed errors.
+server float hd_odr_grasafeedrate = 1.0;
+
+// Multiplier to how quickly the Grasa's bolt degrades. Higher numbers means
+// more failure-to-eject errors.
+server float hd_odr_grasaboltrate = 1.0;
+
+// Multiplier to how quickly players can repair the Grasa M-12.
+server float hd_odr_grasarepairrate = 1.0;
+
+// ==== GATE OF ANTHRAKIA ====
+// Determines which spells the Gate of Anthrakia has when picked up.
+// 0 - None, 1 - Basic Spells (Default), 2 - Random, 3 - All Spells
+server int hd_odr_anthrakiaspellsknown = 1;
+
+// Determines the rate at which frag leaks through Anthrakia portals.
+server float hd_odr_anthrakiafragleak = 1.0;
+
+// Determines the rate at which the Anthrakia causes soul drain.
+server float hd_odr_anthrakiasouldrain = 1.0;
+
+// ==== MASK OF BASILISSA ====
+// Determines the rate at which Basilissa drains your soul.
+server float hd_odr_basilissasouldrain = 1.0;
+
+// ==== HEKI ====
+// Multiplier for how quickly the Heki's arrows travel. Influences damage.
+server float hd_odr_hekishotspeed = 1.0;
+
+// ==== NIMURDAL ====
+// Multiplier for how quickly the Nimurdal travels. Influences damage.
+server float hd_odr_nimurdalthrowspeed = 1.0;
