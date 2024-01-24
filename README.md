@@ -8,3 +8,5 @@ High Noon Drifter created by TerminusEst13.
 Weapons ported to HDest originally by xcoldxfusionx.
 
 Exhaustive Credits are found in credits.txt
+
+currently a WIP so avoid using it on a Save with time investment
