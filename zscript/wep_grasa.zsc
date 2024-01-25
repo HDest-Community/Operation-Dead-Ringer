@@ -16,8 +16,10 @@ each hand with very little issue in case one jams on you, but relying too much
 on this thing's going to get you in a world of trouble.
 **/
 
+const ENC_45ACP_LOADED = 0.55; // should migrate this over to the new 45 var at some point -UQGM
 const ENC_45MAG30_EMPTY = ENC_9MAG30_EMPTY * 1.2;
 const ENC_45MAG30_LOADED = ENC_45MAG30_EMPTY * 0.1;
+
 
 class HD45ACPMag30:HDMagAmmo{
 	default{
@@ -137,11 +139,21 @@ class HDGrasa : HDWeapon {
 			A_StartSound("weapons/rifleclick",9,CHANF_OVERLAP);
 			invoker.weaponStatus[0] |= GRASF_BOLTSTUCK;
 			invoker.weaponstatus[GRASA_BOLTWEAR] += random(1, 10) * hd_odr_grasaboltrate;
-		} else if (invoker.weaponstatus[GRASA_CHAMBER] == 1) {
-			A_EjectCasing("HDSpent45ACP",11,-frandom(79,81),frandom(7,7.5));
+		} else if (invoker.weaponstatus[GRASA_CHAMBER] == 1) 
+		{
+			A_EjectCasing("HDSpent45ACP",
+					frandom(-1,2),
+					(frandom(0.2,0.3),-frandom(7,7.5),frandom(0,0.2)),
+					(0,0,-2)
+				);
 			invoker.weaponstatus[GRASA_CHAMBER]=0;
+			
 		} else if (invoker.weaponstatus[GRASA_CHAMBER] == 2 && ejectAll) {
-			A_EjectCasing("HD45ACPAmmo",11,-frandom(79,81),frandom(7,7.5));
+			A_EjectCasing("HDSpent45ACP",
+					frandom(-1,2),
+					(frandom(0.2,0.3),-frandom(7,7.5),frandom(0,0.2)),
+					(0,0,-2)
+				);
 			invoker.weaponstatus[GRASA_CHAMBER]=0;
 		}
 	}

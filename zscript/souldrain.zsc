@@ -19,6 +19,7 @@ class ODRSoulDrain : Inventory {
 	}
 }
 
+
 class ODRSoulDrainTicker : Inventory {
 	default {
 		+inventory.untossable
@@ -39,10 +40,10 @@ class ODRSoulDrainTicker : Inventory {
 			if (!sd) {
 				if (!bDESTROYED) {Destroy();}
 			} else {
-				let blu = owner.CountInv("HDBlues");
+				let blu = owner.CountInv("HealingMagic");
 				if (blu && !(level.time % 20)) {
 					let value = random(10, 100);
-					HDF.Give(owner, "HDBlues", -1);
+					HDF.Give(owner, "HealingMagic", -1);
 					HDF.Give(owner, "ODRSoulDrain", -value);
 					owner.DamageMobj(owner, owner, min(value/10, owner.health-5), "hot");
 					if (hd_debug) {
