@@ -25,7 +25,7 @@ class HD45ACPMag30:HDMagAmmo{
 	default{
 		//$Category "Ammo/Operation: Dead Ringer"
 		//$Title "Grasa M-12 Magazine"
-		//$Sprite "CLP3A0"
+		//$Sprite "4530A0"
 		hdmagammo.roundtype "HD45ACPAmmo";
 		hdmagammo.maxperunit 30;
 		hdmagammo.roundbulk ENC_45ACP_LOADED;
@@ -42,7 +42,7 @@ class HD45ACPMag30:HDMagAmmo{
 	}
 	
 	override string,string,name,double getmagsprite(int thismagamt){
-		string magsprite=(thismagamt>0)?"CLP3A0":"CLP3B0";
+		string magsprite=(thismagamt>0)?"4530A0":"4530B0";
 		return magsprite,"PBRSA0","HD45ACPAmmo",2.;
 	}
 	override void GetItemsThatUseThis(){
@@ -51,10 +51,10 @@ class HD45ACPMag30:HDMagAmmo{
 	
 	states{
 	spawn:
-		CLP3 A -1;
+		4530 A -1;
 		stop;
 	spawnempty:
-		CLP3 B -1{
+		4530 B -1{
 			brollsprite=true;brollcenter=true;
 			roll=randompick(0,0,0,0,2,2,2,2,1,3)*90;
 		}stop;
@@ -264,11 +264,11 @@ class HDGrasa : HDWeapon {
 		if(sb.hudlevel==1){
 			int nextmagloaded=sb.GetNextLoadMag(hdmagammo(hpl.findinventory("HD45ACPMag30")));
 			if(nextmagloaded>=30){
-				sb.drawimage("CLP3A0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,scale:(3,3));
+				sb.drawimage("4530A0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,scale:(3,3));
 			}else if(nextmagloaded<1){
-				sb.drawimage("CLP3B0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,alpha:nextmagloaded?0.6:1.,scale:(3,3));
+				sb.drawimage("4530A0B0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,alpha:nextmagloaded?0.6:1.,scale:(3,3));
 			}else sb.drawbar(
-				"CLP3NORM","CLP3GREY",
+				"4530NORM","4530GREY",
 				nextmagloaded,30,
 				(-46,-3),-1,
 				sb.SHADER_VERT,sb.DI_SCREEN_CENTER_BOTTOM
