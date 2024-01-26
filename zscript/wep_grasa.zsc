@@ -266,7 +266,7 @@ class HDGrasa : HDWeapon {
 			if(nextmagloaded>=30){
 				sb.drawimage("4530A0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,scale:(3,3));
 			}else if(nextmagloaded<1){
-				sb.drawimage("4530A0B0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,alpha:nextmagloaded?0.6:1.,scale:(3,3));
+				sb.drawimage("4530B0",(-46,-3),sb.DI_SCREEN_CENTER_BOTTOM,alpha:nextmagloaded?0.6:1.,scale:(3,3));
 			}else sb.drawbar(
 				"4530NORM","4530GREY",
 				nextmagloaded,30,
