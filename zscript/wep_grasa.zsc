@@ -242,7 +242,7 @@ class HDGrasa : HDWeapon {
 			} else if (feed > 1000) {
 				logStr = StringTable.Localize("$GRASA_FEEDDAMAGED").." "..StringTable.Localize("$GRASA_REPAIRING1");
 			} else {
-				logStr = StringTable.Localize("$GRASA_GOODCONDITION").." "..StringTable.Localize("$GRASA_FEEDTWEAK");
+				logStr = StringTable.Localize("$GRASA_GOODCONDITION").." "..StringTable.Localize("$GRASA_BOLTTWEAK");
 			}
 			SetWeaponState("repairfeed");
 		} else {
@@ -253,7 +253,7 @@ class HDGrasa : HDWeapon {
 			} else if (bolt > 1000) {
 				logStr = StringTable.Localize("$GRASA_BOLTDAMAGED").." "..StringTable.Localize("$GRASA_REPAIRING1");
 			} else {
-				logStr = StringTable.Localize("$GRASA_GOODCONDITION").." "..StringTable.Localize("$GRASA_BOLTTWEAK");
+				logStr = StringTable.Localize("$GRASA_GOODCONDITION").." "..StringTable.Localize("$GRASA_FEEDTWEAK");
 			}
 			SetWeaponState("repairbolt");
 		}
@@ -312,7 +312,6 @@ class HDGrasa : HDWeapon {
 			sb.DI_SCREEN_CENTER
 		);
 		vector2 bobb=bob*3;
-		bobb.y=clamp(bobb.y,-8,8);
 		sb.drawimage(
 			"smgfrntsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
