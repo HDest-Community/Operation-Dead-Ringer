@@ -20,7 +20,7 @@ PICKUP_BASILISSA = "You got the Mask of Basilissa, Queen of Phlegethon! ...Oh, n
 PICKUP_HEKI = "You got the 'Heki' hunting bow!";
 PICKUP_NIMURDAL = "You got the 'Nimurdal' boomerang!";
 
-PICKUP_GRASACLIP = "Picked up a Grasa M-12 clip.";
+PICKUP_GRASACLIP = "Picked up a Grasa M-12 Magzine.";
 PICKUP_ARROW = "Picked up an arrow.";
 PICKUP_ARROWBUNDLE = "Picked up a bundle of arrows.";
 PICKUP_RUNEPHLEGETHON = "Picked up a Rune of Phlegethon.";
